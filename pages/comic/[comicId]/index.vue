@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useAxios } from '@/composables';
-import { Comic, Comments } from '@/types';
+import { Comic, ComicComments } from '@/types';
 
 type Chapter = {
   name: string;
@@ -17,7 +17,7 @@ const chaptersSection = ref<Chapter[]>([]);
 const currentTab = ref<Tab>('chapters');
 
 const data = (async () => {
-  const [comic, comments]: [Comic, Comments] = await Promise.all([
+  const [comic, comments]: [Comic, ComicComments] = await Promise.all([
     useAxios(`/comics/${comicId}`),
     useAxios(`/comics/${comicId}/comments`),
   ]);
@@ -79,7 +79,10 @@ const handleChangeChapterGroup = (idx: number) => {
         </span>
       </div>
       <div class="col-span-3">
-        <h4 class="text-3xl font-bold mb-4">{{ comic.title }}</h4>
+        <h4 class="text-3xl font-bold">{{ comic.title }}</h4>
+        <p class="mb-3 mt-1 text-sm font-semibold text-gray-700">
+          {{ comic.other_names.join(' | ') }}
+        </p>
         <div class="font-medium text-sm flex flex-wrap items-center gap-2 my-1">
           <NuxtLink
             v-for="genre in comic.genres"
@@ -141,12 +144,13 @@ const handleChangeChapterGroup = (idx: number) => {
           {{ comic.description.replace(/NetTruyen/g, 'NComics') }}
         </p>
         <div class="flex items-center gap-3 mt-5">
-          <button
+          <NuxtLink
+            :to="`/comic/${comic.id}/${comic.chapters.at(-1)?.id}`"
             class="flex items-center gap-1 border-2 border-emerald-500 rounded bg-emerald-500 text-white text-lg px-6 py-2 font-medium"
           >
             <Icon name="carbon:book" size="24" />
             Read Now
-          </button>
+          </NuxtLink>
           <button
             class="flex items-center gap-1 rounded border-2 border-emerald-500 text-emerald-500 text-lg px-6 py-2 font-medium"
           >
@@ -216,78 +220,7 @@ const handleChangeChapterGroup = (idx: number) => {
           </NuxtLink>
         </ul>
       </div>
-      <div v-else class="grid gap-6 mt-5">
-        <div class="flex gap-3" v-for="comment in comments.comments">
-          <img
-            :src="comment.avatar"
-            :alt="comment.username"
-            class="h-10 w-10 rounded-full object-cover"
-            draggable="false"
-          />
-          <div>
-            <h5 class="font-medium">
-              {{ comment.username }}
-            </h5>
-            <p class="break-all">{{ comment.content }}</p>
-            <img
-              v-for="sticker in comment.stickers"
-              :src="sticker"
-              class="max-w-[150px] object-cover rounded"
-              alt="NComics"
-              draggable="false"
-            />
-            <p class="text-sm text-gray-600 mt-1 flex items-center gap-4">
-              {{ comment.created_at }}
-              <span class="flex items-center gap-0.5">
-                <Icon name="iconamoon:like-thin" size="16" />
-                {{ comment.vote_count }}
-              </span>
-            </p>
-            <div class="flex gap-5 mt-4">
-              <Icon
-                name="bi:reply-all"
-                v-if="comment.replies.length"
-                class="rotate-180 text-emerald-500"
-                size="28"
-              />
-              <div class="grid gap-4">
-                <div class="grid gap-3" v-for="reply in comment.replies">
-                  <div class="flex gap-3">
-                    <img
-                      :src="reply.avatar"
-                      :alt="reply.username"
-                      class="h-10 w-10 rounded-full object-cover"
-                      draggable="false"
-                    />
-                    <div>
-                      <h5 class="font-medium">
-                        {{ reply.username }}
-                      </h5>
-                      <p class="break-all">{{ reply.content }}</p>
-                      <img
-                        v-for="sticker in reply.stickers"
-                        :src="sticker"
-                        class="max-w-[150px] object-cover rounded"
-                        alt="NComics"
-                        draggable="false"
-                      />
-                      <p
-                        class="text-sm text-gray-600 mt-1 flex items-center gap-4"
-                      >
-                        {{ reply.created_at }}
-                        <span class="flex items-center gap-0.5">
-                          <Icon name="iconamoon:like-thin" size="16" />
-                          {{ reply.vote_count }}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Comments v-else :comments="comments.comments" />
     </div>
   </div>
 </template>

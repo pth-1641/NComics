@@ -12,7 +12,7 @@ const route = useRoute();
 const router = useRouter();
 
 const getComics = async (tab: string, page: number = 1) => {
-  const data = await useAxios(`/top/${tab === 'all' ? '' : tab} ?page=${page}`);
+  const data = await useAxios(`/top/${tab === 'all' ? '' : tab}?page=${page}`);
   comics.value = data.comics;
   totalPages.value = data.total_pages;
 };

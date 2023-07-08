@@ -23,4 +23,19 @@
   font-size: 16px;
   transition: color 0.05s linear;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #555;
+}
 </style>

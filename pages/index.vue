@@ -4,7 +4,7 @@ import { useAxios } from '../composables';
 const data = (async () => {
   const [
     trendingComics,
-    finishedComics,
+    completedComics,
     recentlyUpdateComics,
     recommendComics,
   ] = await Promise.all([
@@ -15,14 +15,14 @@ const data = (async () => {
   ]);
   return {
     trendingComics,
-    finishedComics,
+    completedComics,
     recentlyUpdateComics,
     recommendComics,
   };
 })();
 
 const {
-  finishedComics,
+  completedComics,
   recentlyUpdateComics,
   trendingComics,
   recommendComics,
@@ -49,16 +49,19 @@ const {
       title="Popular Comics"
       :comics="trendingComics.comics"
       icon="mdi:fire"
+      link="/popular"
     />
     <ComicsSlide
-      title="Finished Comics"
-      :comics="finishedComics.comics"
+      title="Completed Comics"
+      :comics="completedComics.comics"
       icon="ph:seal-check-fill"
+      link="/completed"
     />
     <ComicsSlide
       title="Recently Update"
       :comics="recentlyUpdateComics.comics"
       icon="mdi:clock-outline"
+      link="/recent"
     />
   </main>
 </template>
