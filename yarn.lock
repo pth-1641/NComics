@@ -6698,6 +6698,13 @@ vscode-uri@^3.0.2:
   resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-3.0.7.tgz#6d19fef387ee6b46c479e5fb00870e15e58c1eb8"
   integrity sha512-eOpPHogvorZRobNqJGhapa0JdwaxpjVvyBp0QIUMRMSf8ZAlqOdEquKuRmw9Qwu0qXtJIWqFtMkmvJjUZmMjVA==
 
+vue-awesome-paginate@^1.1.46:
+  version "1.1.46"
+  resolved "https://registry.yarnpkg.com/vue-awesome-paginate/-/vue-awesome-paginate-1.1.46.tgz#93091ca23b98d4be7d21149ae0dfbc2997215743"
+  integrity sha512-hjwAJLd2N54j0uuGgqmlTdhZw8NBFQpFiShjGrvxsA0DnvmOQjM18GEor+Ieigz6nE8VA4hQerIDBQjf4lsacg==
+  dependencies:
+    vue "^3.2.25"
+
 vue-bundle-renderer@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/vue-bundle-renderer/-/vue-bundle-renderer-1.0.3.tgz#422438aa4a024e2833e87a5a2d0b97c6c12fb2d8"
@@ -6717,7 +6724,7 @@ vue-router@^4.2.2:
   dependencies:
     "@vue/devtools-api" "^6.5.0"
 
-vue@^3.3.4:
+vue@^3.2.25, vue@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.3.4.tgz#8ed945d3873667df1d0fcf3b2463ada028f88bd6"
   integrity sha512-VTyEYn3yvIeY1Py0WaYGZsXnz3y5UnGi62GjVEqvEGPl6nxbOrCXbVOTQWBEJUqAyTUk2uJ5JLVnYJ6ZzGbrSw==

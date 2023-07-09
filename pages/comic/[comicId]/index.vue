@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { useAxios } from '@/composables';
-import { Comic, ComicComments } from '@/types';
+import { ComicDetail, ComicComments, Comment } from '@/types';
 
 type Chapter = {
   name: string;
@@ -15,19 +14,22 @@ const CHAPTER_PER_PAGE = 50;
 const currentChapterPage = ref<number>(0);
 const chaptersSection = ref<Chapter[]>([]);
 const currentTab = ref<Tab>('chapters');
+const isFetching = ref<boolean>(false);
+const commentPage = ref<number>(1);
+const comments = ref<Comment[]>([]);
 
 const data = (async () => {
-  const [comic, comments]: [Comic, ComicComments] = await Promise.all([
-    useAxios(`/comics/${comicId}`),
-    useAxios(`/comics/${comicId}/comments`),
-  ]);
+  const [comic, commentsData]: [ComicDetail, ComicComments] = await Promise.all(
+    [useAxios(`/comics/${comicId}`), useAxios(`/comics/${comicId}/comments`)]
+  );
+  comments.value = commentsData.comments;
   return {
     comic,
-    comments,
+    commentsData,
   };
 })();
 
-const { comic, comments } = await data;
+const { comic } = await data;
 const newestChapter = comic.chapters[0].name.match(/\d+(\.\d+)?/)?.[0];
 const totalChapterPage = Math.ceil(Number(newestChapter) / CHAPTER_PER_PAGE);
 
@@ -55,10 +57,28 @@ const handleChangeChapterGroup = (idx: number) => {
     (idx + 1) * CHAPTER_PER_PAGE
   );
 };
+
+const handleLoadComments = async () => {
+  try {
+    isFetching.value = true;
+    commentPage.value += 1;
+    const data = await useAxios(
+      `/comics/${comicId}/comments?page=${commentPage.value}`
+    );
+    comments.value = [...comments.value, ...data.comments];
+  } catch (err) {
+    console.log(err);
+  } finally {
+    isFetching.value = false;
+  }
+};
 </script>
 
 <template>
-  <div class="h-80 bg-gradient-to-b from-emerald-100 pt-12">
+  <div class="relative pt-12">
+    <div
+      class="absolute top-0 inset-x-0 h-80 bg-gradient-to-b from-emerald-100 -z-10"
+    />
     <div
       class="max-w-5xl mx-auto border-4 border-white rounded-xl grid grid-cols-4 gap-6 p-4"
     >
@@ -131,7 +151,7 @@ const handleChangeChapterGroup = (idx: number) => {
             </template>
           </span>
           <span class="flex items-center gap-1">
-            <Icon name="ph:star-fill" size="20" class="text-yellow-500" />
+            <Icon name="ph:star-fill" size="20" class="text-yellow-400" />
             <template v-if="comic.total_views === 'Updating'">
               Updating
             </template>
@@ -220,7 +240,19 @@ const handleChangeChapterGroup = (idx: number) => {
           </NuxtLink>
         </ul>
       </div>
-      <Comments v-else :comments="comments.comments" />
+      <template v-else>
+        <Comments :comments="comments" />
+        <div class="w-max mx-auto mt-4">
+          <Icon name="line-md:loading-loop" size="42" v-if="isFetching" />
+          <button
+            v-else
+            class="bg-emerald-100 text-emerald-500 font-medium rounded-full px-4 py-1.5"
+            @click="handleLoadComments"
+          >
+            Load more
+          </button>
+        </div>
+      </template>
     </div>
   </div>
 </template>

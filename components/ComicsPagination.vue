@@ -2,6 +2,7 @@
 type ComicsPaginationProps = {
   comics: any;
   totalPages: number;
+  isFetching: boolean;
   title?: string;
   icon?: string;
 };
@@ -15,6 +16,7 @@ const { icon, title } = props;
 reactive({
   comics: props.comics,
   totalPages: props.totalPages,
+  isFetching: props.isFetching,
 });
 
 onMounted(() => {
@@ -39,59 +41,69 @@ const handleChangePage = async (page: number) => {
     v-if="title"
   >
     <Icon :name="icon" size="36" class="text-emerald-500" />
-    {{ title }}
+    {{ title }} - Page {{ currentPage }}
   </h2>
   <div :class="`grid grid-cols-5 gap-5`">
-    <div v-for="comic in comics" :key="comic.id">
+    <div
+      v-for="(_, idx) in new Array(20)"
+      :key="idx"
+      v-if="isFetching"
+      class="aspect-[2/3] rounded bg-gray-100 animation-pulse"
+    />
+    <div v-for="comic in comics" :key="comic.id" v-else>
       <ComicCard :comic="comic" :detail="true" />
     </div>
   </div>
-  <ul class="flex justify-center items-stretch gap-2 py-8">
-    <Icon
-      name="lucide:chevron-first"
-      size="32"
-      class="p-1 rounded border hover:border-emerald-500 duration-100 cursor-pointer"
-      @click="handleChangePage(1)"
-    />
-    <Icon
-      name="lucide:chevron-left"
-      size="32"
-      class="p-1 rounded border hover:border-emerald-500 duration-100 cursor-pointer"
-      @click="handleChangePage(currentPage - 1)"
-    />
-    <li
-      v-for="page in [currentPage - 1, currentPage, currentPage + 1]"
-      :key="page"
-      :class="`px-3 flex items-center rounded border hover:border-emerald-500 duration-100 cursor-pointer ${
-        page === currentPage ? 'bg-emerald-500 text-white' : ''
-      }`"
-      @click="handleChangePage(page)"
-      v-show="page > 0"
-    >
-      {{ page }}
-    </li>
-    <Icon name="pepicons-pencil:dots-x" size="24" class="h-8" />
-    <li
-      v-for="page in [totalPages - 2, totalPages - 1, totalPages]"
-      :key="page"
-      :class="`px-3 flex items-center rounded border hover:border-emerald-500 duration-100 cursor-pointer ${
-        page === currentPage ? 'bg-emerald-500 text-white' : ''
-      }`"
-      @click="handleChangePage(page)"
-    >
-      {{ page }}
-    </li>
-    <Icon
-      name="lucide:chevron-right"
-      size="32"
-      class="p-1 rounded border hover:border-emerald-500 duration-100 cursor-pointer"
-      @click="handleChangePage(currentPage + 1)"
-    />
-    <Icon
-      name="lucide:chevron-last"
-      size="32"
-      class="p-1 rounded border hover:border-emerald-500 duration-100 cursor-pointer"
-      @click="handleChangePage(totalPages)"
-    />
-  </ul>
+  <vue-awesome-paginate
+    :total-items="totalPages"
+    :items-per-page="1"
+    :max-pages-shown="3"
+    v-model="currentPage"
+    :show-ending-buttons="true"
+    :hide-prev-next-when-ends="true"
+    :disable-breakpoint-buttons="true"
+    :on-click="handleChangePage"
+  >
+    <template #first-page-button>
+      <Icon name="icon-park:go-start" size="28" />
+    </template>
+    <template #prev-button>
+      <Icon name="icon-park:left" size="28" />
+    </template>
+    <template #next-button>
+      <Icon name="icon-park:right" size="28" />
+    </template>
+    <template #last-page-button>
+      <Icon name="icon-park:go-end" size="28" />
+    </template>
+  </vue-awesome-paginate>
 </template>
+
+<style>
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+  column-gap: 10px;
+}
+.paginate-buttons {
+  height: 36px;
+  width: 36px;
+  border-radius: 100px;
+  cursor: pointer;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: black;
+}
+.paginate-buttons:hover {
+  background-color: #d8d8d8;
+}
+.active-page {
+  background-color: #10b981;
+  border: 1px solid #10b981;
+  color: white;
+}
+.active-page:hover {
+  background-color: #059669;
+}
+</style>

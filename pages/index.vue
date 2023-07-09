@@ -1,23 +1,27 @@
 <script lang="ts" setup>
-import { useAxios } from '../composables';
-
 const data = (async () => {
   const [
     trendingComics,
     completedComics,
     recentlyUpdateComics,
     recommendComics,
+    boyComics,
+    girlComics,
   ] = await Promise.all([
     useAxios('/trending-comics'),
     useAxios('/completed-comics'),
     useAxios('/recent-update-comics'),
     useAxios('/recommend-comics'),
+    useAxios('/boy-comics'),
+    useAxios('/girl-comics'),
   ]);
   return {
     trendingComics,
     completedComics,
     recentlyUpdateComics,
     recommendComics,
+    boyComics,
+    girlComics,
   };
 })();
 
@@ -26,6 +30,8 @@ const {
   recentlyUpdateComics,
   trendingComics,
   recommendComics,
+  boyComics,
+  girlComics,
 } = await data;
 </script>
 
@@ -62,6 +68,18 @@ const {
       :comics="recentlyUpdateComics.comics"
       icon="mdi:clock-outline"
       link="/recent"
+    />
+    <ComicsSlide
+      title="Boy Comics"
+      :comics="boyComics.comics"
+      icon="tabler:gender-male"
+      link="/boy"
+    />
+    <ComicsSlide
+      title="Girl Comics"
+      :comics="girlComics.comics"
+      icon="tabler:gender-female"
+      link="/girl"
     />
   </main>
 </template>

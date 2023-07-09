@@ -1,4 +1,4 @@
-export type Comic = {
+export type ComicDetail = {
   average: number;
   chapters: {
     id: number;
@@ -19,6 +19,30 @@ export type Comic = {
   status: string;
   total_views: number | string;
   authors: string | string[];
+};
+
+export type Comic = {
+  title: string;
+  thumbnail: string;
+  followers: string;
+  genres: {
+    id: string;
+    title: string;
+  }[];
+  authors: string | string[];
+  id: string;
+  is_trending: boolean;
+  lastest_chapters: {
+    id: string;
+    name: string;
+    updated_at: string;
+  }[];
+  other_names: string[];
+  short_description: string;
+  status: string;
+  total_comments: string;
+  total_views: string;
+  updated_at: string;
 };
 
 export type Reply = {
@@ -46,4 +70,10 @@ export type ComicComments = {
   total_comments: number;
   current_page: number;
   comments: Comment[];
+};
+
+export type Genre = {
+  name: string;
+  id: string;
+  description?: string;
 };

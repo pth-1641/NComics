@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { routes } from '@/utils/data';
 import { useAxios } from '@/composables';
+import { routes } from '@/utils/data';
 
 const route = useRoute();
-const { path, params } = route;
+const { path } = route;
 const router = useRouter();
 
 const currentPath = ref<string>(path);
@@ -34,12 +34,14 @@ watch(searchValue, (newValue) => {
     );
     suggestComics.value = result;
     showSuggest.value = result.length;
-  }, 300);
+  }, 200);
 });
 
 watch(route, (route) => {
   showHeader.value = !route.params.chapterId;
 });
+
+onBeforeUnmount(() => clearTimeout(timeout));
 </script>
 
 <template>
@@ -75,7 +77,9 @@ watch(route, (route) => {
         </NuxtLink>
         <form
           class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 mx-4 relative"
-          @submit.prevent="router.push(`/search?q=${searchValue}`)"
+          @submit.prevent="
+            router.push(`/search?q=${searchValue.replace(/\s+/g, '+')}`)
+          "
         >
           <input
             type="text"

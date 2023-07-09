@@ -22,13 +22,15 @@ reactive({
           {{ comment.username }}
         </h5>
         <p class="break-word">{{ comment.content }}</p>
-        <img
-          v-for="sticker in comment.stickers"
-          :src="sticker"
-          class="max-w-[150px] object-cover rounded"
-          alt="NComics"
-          draggable="false"
-        />
+        <div class="flex items-end gap-1 flex-wrap">
+          <img
+            v-for="sticker in comment.stickers"
+            :src="sticker"
+            class="max-w-[150px] object-cover rounded-sm h-max"
+            alt="NComics"
+            draggable="false"
+          />
+        </div>
         <p class="text-sm text-gray-600 mt-1 flex items-center gap-4">
           {{ comment.created_at }}
           <span class="flex items-center gap-0.5">
@@ -54,19 +56,21 @@ reactive({
                 />
                 <div>
                   <h5 class="font-medium">{{ reply.username }}</h5>
-                  <p class="break-all">
+                  <p class="break-word">
                     <span class="text-emerald-500 font-medium">
                       {{ reply.mention_user }}
                     </span>
                     {{ reply.content }}
                   </p>
-                  <img
-                    v-for="sticker in reply.stickers"
-                    :src="sticker"
-                    class="max-w-[150px] object-cover rounded"
-                    alt="NComics"
-                    draggable="false"
-                  />
+                  <div class="flex items-end gap-1 flex-wrap">
+                    <img
+                      v-for="sticker in reply.stickers"
+                      :src="sticker"
+                      class="max-w-[150px] object-cover rounded-sm h-max"
+                      alt="NComics"
+                      draggable="false"
+                    />
+                  </div>
                   <p class="text-sm text-gray-600 mt-1 flex items-center gap-4">
                     {{ reply.created_at }}
                     <span class="flex items-center gap-0.5">

@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import { useAxios } from '@/composables';
 import { Comment } from '@/types';
 
 const currentPage = ref<number>(1);
 const inputRangeVal = ref<number>(1);
+const commentPage = ref<number>(1);
 
 const openEpisode = ref<boolean>(false);
 const showToolbar = ref<boolean>(true);
 const openComments = ref<boolean>(false);
+const isFetching = ref<boolean>(false);
+const isEnd = ref<boolean>(false);
 
 const comments = ref<Comment[]>([]);
 
@@ -17,17 +19,21 @@ const router = useRouter();
 const { chapterId, comicId } = route.params;
 
 const { images, chapters, comic_name, chapter_name } = await useAxios(
-  `/comics/${comicId}/images/${chapterId}`
+  `/comics/${comicId}/chapters/${chapterId}`
 );
 
-const getComments = async (page: number = 1) => {
+const getComments = async () => {
   try {
+    isFetching.value = true;
+    commentPage.value += 1;
     const data = await useAxios(
-      `/comics/${comicId}/comments?chapter=${chapterId}&page=${page}`
+      `/comics/${comicId}/comments?chapter=${chapterId}&page=${commentPage.value}`
     );
-    comments.value = data.comments;
+    comments.value = [...comments.value, ...data.comments];
   } catch (err) {
     console.log(err);
+  } finally {
+    isFetching.value = false;
   }
 };
 
@@ -107,12 +113,22 @@ onBeforeUnmount(() => {
           <Icon
             name="icon-park:close-small"
             size="32"
-            class="cursor-pointer absolute top-2 right-2"
+            class="cursor-pointer absolute top-3 right-3"
             @click="openComments = false"
           />
           <div class="w-[60vw] max-h-[75vh] overflow-auto py-5 p-10 text-sm">
             <h4 class="text-2xl font-bold text-zinc-600">Comments</h4>
             <Comments :comments="comments" />
+            <div class="w-max mx-auto pb-2 mt-6" v-if="!isEnd">
+              <Icon name="line-md:loading-loop" size="42" v-if="isFetching" />
+              <button
+                v-else
+                class="bg-emerald-100 text-emerald-500 font-medium rounded-full px-4 py-1.5"
+                @click="getComments"
+              >
+                Load more
+              </button>
+            </div>
           </div>
         </div>
       </div>

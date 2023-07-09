@@ -1,19 +1,28 @@
 <script lang="ts" setup>
-import { useAxios } from '../composables';
+import { Genre } from 'types';
 
 const currentGenre = ref<string>('');
 const comics = ref<any>([]);
 const totalPages = ref<number>(0);
 const genres = ref<any>([]);
 const initSlide = ref<number>(0);
+const isFetching = ref<boolean>(false);
 
 const router = useRouter();
 const route = useRoute();
 
 const getComics = async (genreId: string, page: number = 1) => {
-  const data = await useAxios(`/genres/${genreId}?page=${page}`);
-  comics.value = data.comics;
-  totalPages.value = data.total_pages;
+  try {
+    window.scrollTo(0, 0);
+    isFetching.value = true;
+    const data = await useAxios(`/genres/${genreId}?page=${page}`);
+    comics.value = data.comics;
+    totalPages.value = data.total_pages;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    isFetching.value = false;
+  }
 };
 
 const currentQuery = route.query.type as string;
@@ -24,7 +33,7 @@ const [_, genresData] = await Promise.all([
 ]);
 genres.value = genresData;
 initSlide.value = genresData.findIndex(
-  (genre: any) => genre.id === currentGenre.value
+  (genre: Genre) => genre.id === currentGenre.value
 );
 
 watch([currentGenre, route], async ([newGenre, route]) => {
@@ -64,16 +73,24 @@ const handleChangeGenre = async (genreId: string) => {
         }`"
         @click="handleChangeGenre(genre.id)"
       >
-        {{ genre.title }}
+        {{ genre.name }}
       </SwiperSlide>
     </Swiper>
     <p
       class="my-5 flex items-center gap-2 py-2 px-3 rounded bg-sky-500 text-white"
     >
-      <Icon name="fluent:info-16-filled" size="32" class="w-8" />
+      <Icon
+        name="fluent:info-16-filled"
+        size="30"
+        class="w-full max-w-[30px]"
+      />
       {{ genres?.find((genre: any) => genre.id === currentGenre)?.description }}
     </p>
-    <ComicsPagination :comics="comics" :totalPages="totalPages" />
+    <ComicsPagination
+      :comics="comics"
+      :total-pages="totalPages"
+      :is-fetching="isFetching"
+    />
   </main>
 </template>
 
