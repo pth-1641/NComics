@@ -2,17 +2,15 @@
 import { dynamicRoutes } from '@/utils/data';
 
 const route = useRoute();
-const router = useRouter();
 
 const routeData = dynamicRoutes.find((r) => r.path === route.path);
-if (!routeData) router.push('/404');
+if (!routeData) navigateTo('/404');
 
 const comics = ref<any>();
 const isFetching = ref<boolean>(false);
 
 const getCommics = async (page: number) => {
   try {
-    window.scrollTo(0, 0);
     isFetching.value = true;
     const data = await useAxios(`${routeData?.apiPath}?page=${page}`);
     comics.value = data;
@@ -29,17 +27,28 @@ onBeforeMount(async () => {
 });
 
 watch(route, async (route) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const page = route.query.page || 1;
   await getCommics(Number(page));
 });
 </script>
 
 <template>
+  <Head>
+    <Title>{{
+      `${
+        routeData
+          ? `${routeData.title} - Page ${route.query.page ?? 1} | NComics`
+          : 'NComics'
+      }`
+    }}</Title>
+    <Meta name="description" content="Free comic and manga reader online" />
+  </Head>
   <main class="max-w-6xl mx-auto">
     <ComicsPagination
       :is-fetching="isFetching"
       :comics="comics?.comics"
-      :total-pages="comics?.total_pages"
+      :total-pages="comics?.total_pages || 0"
       :title="routeData?.title"
       :icon="routeData?.icon"
     />

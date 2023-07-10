@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { meta } from '@/utils/data';
+
 const data = (async () => {
   const [
     trendingComics,
@@ -33,6 +35,9 @@ const {
   boyComics,
   girlComics,
 } = await data;
+
+useSeoMeta(meta());
+useServerSeoMeta(meta());
 </script>
 
 <template>

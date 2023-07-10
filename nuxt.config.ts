@@ -1,16 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
-  devtools: { enabled: false },
+  ssr: true,
   nitro: {
     prerender: {
       crawlLinks: true,
     },
   },
   modules: ['@nuxtjs/tailwindcss', 'nuxt-icon', 'nuxt-swiper'],
+  devtools: { enabled: false },
   runtimeConfig: {
     public: {
-      baseURl: process.env.BASE_URL,
+      baseURL: process.env.BASE_URL,
     },
   },
 });

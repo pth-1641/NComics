@@ -1,10 +1,15 @@
 <template>
   <NuxtLayout>
+    <NuxtLoadingIndicator />
     <NuxtPage />
   </NuxtLayout>
 </template>
 
 <style>
+html {
+  scroll-behavior: smooth;
+}
+
 .swiper-button-prev,
 .swiper-button-next {
   width: 36px;
@@ -30,12 +35,13 @@
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  height: 8px;
   background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: #555;
+  background-color: #888;
 }
 </style>

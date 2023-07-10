@@ -4,16 +4,24 @@ import { Genre } from 'types';
 const currentGenre = ref<string>('');
 const comics = ref<any>([]);
 const totalPages = ref<number>(0);
-const genres = ref<any>([]);
+const genres = ref<Genre[]>([]);
 const initSlide = ref<number>(0);
 const isFetching = ref<boolean>(false);
 
 const router = useRouter();
 const route = useRoute();
 
-const getComics = async (genreId: string, page: number = 1) => {
+const handleChangeGenre = async (genreId: string) => {
+  currentGenre.value = genreId;
+  router.replace({
+    query: {
+      type: genreId,
+    },
+  });
+};
+
+const getComics = async (genreId: string, page: number) => {
   try {
-    window.scrollTo(0, 0);
     isFetching.value = true;
     const data = await useAxios(`/genres/${genreId}?page=${page}`);
     comics.value = data.comics;
@@ -25,10 +33,12 @@ const getComics = async (genreId: string, page: number = 1) => {
   }
 };
 
-const currentQuery = route.query.type as string;
-currentGenre.value = currentQuery || 'all';
+const page = route.query.page;
+const p = page && !isNaN(+page) ? Number(route.query.page) : 1;
+const type = route.query.type;
+currentGenre.value = type ? String(type) : 'all';
 const [_, genresData] = await Promise.all([
-  getComics(currentQuery),
+  getComics(currentGenre.value, p),
   useAxios('/genres'),
 ]);
 genres.value = genresData;
@@ -36,22 +46,30 @@ initSlide.value = genresData.findIndex(
   (genre: Genre) => genre.id === currentGenre.value
 );
 
-watch([currentGenre, route], async ([newGenre, route]) => {
-  const page = route.query.page || 1;
-  await getComics(newGenre, Number(page));
+watch(route, async (route) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const page = route.query.page;
+  const p = page && !isNaN(+page) ? Number(page) : 1;
+  const genre = route.query.type ? String(route.query.type) : 'all';
+  await getComics(genre, p);
 });
-
-const handleChangeGenre = async (genreId: string) => {
-  currentGenre.value = genreId;
-  router.replace({
-    query: {
-      type: genreId,
-    },
-  });
-};
 </script>
 
 <template>
+  <Head>
+    <Title>{{
+      `${
+        genres.find((genre: any) => genre.id === currentGenre)?.name +
+          ` - Page ${route.query.page ?? 1}` || 'Genres'
+      } | NComics`
+    }}</Title>
+    <Meta
+      name="description"
+      :content="genres.find((genre: any) => genre.id === currentGenre)?.description 
+        || 'Free comic and manga reader online'
+        "
+    />
+  </Head>
   <main class="max-w-6xl mx-auto">
     <h2 class="flex items-center gap-2 text-3xl font-medium mb-4 mt-8">
       <Icon name="fa-solid:crown" size="36" class="text-emerald-500" />

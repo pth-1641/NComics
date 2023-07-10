@@ -4,6 +4,7 @@
       <div class="flex justify-center mt-8 space-x-6">
         <NuxtLink
           target="_blank"
+          rel="noopener noreferrer"
           to="https://www.facebook.com/pth.1641"
           class="text-gray-400 hover:text-gray-500"
         >
@@ -12,6 +13,7 @@
         </NuxtLink>
         <NuxtLink
           target="_blank"
+          rel="noopener noreferrer"
           to="https://github.com/pth-1641"
           class="text-gray-400 hover:text-gray-500"
         >
@@ -20,6 +22,7 @@
         </NuxtLink>
         <NuxtLink
           target="_blank"
+          rel="noopener noreferrer"
           to="https://github.com/pth-1641/Comics-API"
           class="text-gray-400 hover:text-gray-500"
         >

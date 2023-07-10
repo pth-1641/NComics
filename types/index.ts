@@ -27,7 +27,7 @@ export type Comic = {
   followers: string;
   genres: {
     id: string;
-    title: string;
+    name: string;
   }[];
   authors: string | string[];
   id: string;

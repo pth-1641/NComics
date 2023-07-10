@@ -42,7 +42,7 @@ reactive({
           <Icon
             name="bi:reply-all"
             v-if="comment.replies.length"
-            class="rotate-180 text-emerald-500"
+            class="rotate-180 text-emerald-500 w-full max-w-[28px]"
             size="28"
           />
           <div class="grid gap-4">

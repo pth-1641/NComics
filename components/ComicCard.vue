@@ -1,18 +1,7 @@
 <script lang="ts" setup>
-type ComicProps = {
-  id: string;
-  title: string;
-  thumbnail: string;
-  status: string;
-  total_views: string;
-  total_comments: string;
-  followers: string;
-  authors: string | string[];
-  is_trending: boolean;
-  updated_at: string;
-};
+import { Comic } from 'types';
 
-const props = defineProps<{ comic: ComicProps; detail?: boolean }>();
+const props = defineProps<{ comic: Comic; detail?: boolean }>();
 const { comic, detail } = props;
 const {
   authors,
@@ -26,14 +15,12 @@ const {
   is_trending,
   updated_at,
 } = comic;
-
-const router = useRouter();
 </script>
 
 <template>
   <div
     class="overflow-hidden rounded-md duration-500 border-2 border-transparent hover:border-emerald-300 relative group group-hover:shadow-md cursor-pointer"
-    @click="router.push(`/comic/${id}`)"
+    @click="navigateTo(`/comic/${id}`)"
   >
     <div
       class="flex gap-1 absolute font-semibold top-0 inset-x-0 z-10 text-xs text-white"

@@ -1,24 +1,16 @@
 <script lang="ts" setup>
-import { useAxios } from '@/composables';
 import { routes } from '@/utils/data';
 
 const route = useRoute();
-const { path } = route;
-const router = useRouter();
 
-const currentPath = ref<string>(path);
 const searchValue = ref<string>('');
 const suggestComics = ref<any>([]);
 const showSuggest = ref<boolean>(false);
 const showHeader = ref<boolean>(true);
 
-const handleChangeRoute = (newPath: string) => {
-  currentPath.value = newPath;
-};
-
 const handleSelectComic = (comicId: string) => {
   showSuggest.value = false;
-  router.push(`/comic/${comicId}`);
+  navigateTo(`/comic/${comicId}`);
 };
 
 let timeout: any;
@@ -48,37 +40,38 @@ onBeforeUnmount(() => clearTimeout(timeout));
   <header class="shadow bg-white relative z-50" v-show="showHeader">
     <nav class="max-w-7xl h-14 mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2 h-full">
-        <NuxtLink to="/" class="flex items-center gap-2 h-full">
-          <img src="../assets/img/logo.svg" alt="NComics" class="h-full py-2" />
+        <NuxtLink to="/" class="flex items-center gap-2 h-full select-none">
+          <img
+            src="../assets/img/logo.svg"
+            alt="NComics"
+            class="h-full py-2"
+            draggable="false"
+          />
           <h1 class="text-2xl font-bold text-emerald-500 chocopy">NComics</h1>
         </NuxtLink>
         <ul class="flex items-center gap-2 text-lg ml-6 text-base">
           <li v-for="route in routes" :key="route.path">
             <NuxtLink
               :to="route.path"
-              :class="`px-4 py-2 duration-150 font-medium ${
-                route.path === currentPath
-                  ? 'bg-emerald-500 rounded-full text-white'
-                  : 'hover:text-emerald-500'
-              }`"
-              @click="handleChangeRoute(route.path)"
+              class="px-4 py-2 duration-150 font-medium hover:text-emerald-500"
+              active-class="bg-emerald-500 rounded-full text-white hover:text-white"
             >
               {{ route.name }}
             </NuxtLink>
           </li>
         </ul>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <NuxtLink to="favourite">
-          <Icon name="mdi:heart" size="32" />
+          <Icon name="mdi:heart" size="30" />
         </NuxtLink>
         <NuxtLink to="history">
-          <Icon name="ic:outline-history" size="32" />
+          <Icon name="ic:outline-history" size="30" />
         </NuxtLink>
         <form
           class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 mx-4 relative"
           @submit.prevent="
-            router.push(`/search?q=${searchValue.replace(/\s+/g, '+')}`)
+            navigateTo(`/search?q=${searchValue.replace(/\s+/g, '+')}`)
           "
         >
           <input

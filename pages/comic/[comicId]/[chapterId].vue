@@ -12,10 +12,9 @@ const isFetching = ref<boolean>(false);
 const isEnd = ref<boolean>(false);
 
 const comments = ref<Comment[]>([]);
+const totalComments = ref<number>(0);
 
 const route = useRoute();
-const router = useRouter();
-
 const { chapterId, comicId } = route.params;
 
 const { images, chapters, comic_name, chapter_name } = await useAxios(
@@ -30,6 +29,8 @@ const getComments = async () => {
       `/comics/${comicId}/comments?chapter=${chapterId}&page=${commentPage.value}`
     );
     comments.value = [...comments.value, ...data.comments];
+    if (commentPage.value >= data.total_pages) isEnd.value = true;
+    return data.total_comments;
   } catch (err) {
     console.log(err);
   } finally {
@@ -43,7 +44,7 @@ const handleChangeEpisode = (type: 'prev' | 'next') => {
     (chapter: any) => chapter.id === Number(chapterId)
   );
   const nextChapterIdx = chapterIdx + (type === 'next' ? 1 : -1);
-  router.push(`/comic/${comicId}/${episodes[nextChapterIdx].id}`);
+  navigateTo(`/comic/${comicId}/${episodes[nextChapterIdx].id}`);
 };
 
 const handleShowToolbar = (e: Event) => {
@@ -75,18 +76,27 @@ const getElementsPos = () => {
   }
 };
 
-onMounted(async () => {
-  document.addEventListener('scroll', getElementsPos);
-  await getComments();
+onBeforeMount(async () => {
+  totalComments.value = await getComments();
 });
-onBeforeUnmount(() => {
-  document.removeEventListener('scroll', getElementsPos);
-});
+onMounted(() => document.addEventListener('scroll', getElementsPos));
+onBeforeUnmount(() => document.removeEventListener('scroll', getElementsPos));
+
+useSeoMeta(
+  meta({
+    title: `${comic_name} - ${chapter_name} | NComics`,
+  })
+);
+useServerSeoMeta(
+  meta({
+    title: `${comic_name} - ${chapter_name} | NComics`,
+  })
+);
 </script>
 
 <template>
   <main class="bg-zinc-900 min-h-screen">
-    <div class="flex flex-col max-w-xl mx-auto">
+    <div class="flex flex-col max-w-2xl mx-auto">
       <img
         v-for="image in images"
         :src="image.src"
@@ -116,7 +126,9 @@ onBeforeUnmount(() => {
             class="cursor-pointer absolute top-3 right-3"
             @click="openComments = false"
           />
-          <div class="w-[60vw] max-h-[75vh] overflow-auto py-5 p-10 text-sm">
+          <div
+            class="w-full max-w-4xl max-h-[75vh] overflow-auto py-5 p-10 text-sm"
+          >
             <h4 class="text-2xl font-bold text-zinc-600">Comments</h4>
             <Comments :comments="comments" />
             <div class="w-max mx-auto pb-2 mt-6" v-if="!isEnd">
@@ -128,6 +140,12 @@ onBeforeUnmount(() => {
               >
                 Load more
               </button>
+            </div>
+            <div
+              v-else
+              class="mt-6 text-center font-bold text-gray-700 select-none"
+            >
+              - END -
             </div>
           </div>
         </div>
@@ -210,11 +228,18 @@ onBeforeUnmount(() => {
         <span class="border-b rotate-90 w-4 border-gray-400" />
         <div class="flex items-center gap-6">
           <button class="flex items-center gap-2" @click="openComments = true">
-            <Icon
-              name="majesticons:comment-2-text-line"
-              size="24"
-              class="text-white"
-            />
+            <span class="relative">
+              <Icon
+                name="majesticons:comment-2-text-line"
+                size="24"
+                class="text-white"
+              />
+              <span
+                class="absolute -right-2 -top-2 text-xs bg-zinc-600 rounded text-gray-200 px-0.5"
+              >
+                {{ totalComments }}
+              </span>
+            </span>
             Comments
           </button>
           <button class="flex items-center gap-2">

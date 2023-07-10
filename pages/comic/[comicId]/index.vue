@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ComicDetail, ComicComments, Comment } from '@/types';
+import { meta } from '@/utils/data';
 
 type Chapter = {
   name: string;
@@ -11,12 +12,17 @@ const route = useRoute();
 const comicId = route.params.comicId;
 const CHAPTER_PER_PAGE = 50;
 
-const currentChapterPage = ref<number>(0);
 const chaptersSection = ref<Chapter[]>([]);
 const currentTab = ref<Tab>('chapters');
-const isFetching = ref<boolean>(false);
-const commentPage = ref<number>(1);
 const comments = ref<Comment[]>([]);
+const description = ref<any>(null);
+
+const commentPage = ref<number>(1);
+const currentChapterPage = ref<number>(0);
+
+const isFetching = ref<boolean>(false);
+const isTooLongDesciption = ref<boolean>(false);
+const showFullDesciption = ref<boolean>(false);
 
 const data = (async () => {
   const [comic, commentsData]: [ComicDetail, ComicComments] = await Promise.all(
@@ -72,6 +78,24 @@ const handleLoadComments = async () => {
     isFetching.value = false;
   }
 };
+
+onMounted(() => {
+  const { clientHeight, scrollHeight } = description.value;
+  isTooLongDesciption.value = clientHeight < scrollHeight;
+});
+
+useSeoMeta(
+  meta({
+    title: comic.title + ' | NComics',
+    description: comic.description,
+  })
+);
+useServerSeoMeta(
+  meta({
+    title: comic.title + ' | NComics',
+    description: comic.description,
+  })
+);
 </script>
 
 <template>
@@ -91,12 +115,22 @@ const handleLoadComments = async () => {
           :alt="comic.title"
           draggable="false"
         />
-        <span
-          v-if="comic.is_adult"
-          class="absolute top-0 left-0 font-bold text-white text-xs bg-rose-500 py-0.5 px-2 rounded-b-sm"
+        <div
+          class="flex gap-1 absolute font-semibold top-0 inset-x-0 z-10 text-xs text-white"
         >
-          18+
-        </span>
+          <span
+            v-if="comic.status === 'Finished'"
+            class="bg-sky-500 py-0.5 px-2 rounded-b-sm"
+          >
+            End
+          </span>
+          <span
+            v-if="comic.is_adult"
+            class="bg-rose-500 py-0.5 px-2 rounded-b-sm"
+          >
+            18+
+          </span>
+        </div>
       </div>
       <div class="col-span-3">
         <h4 class="text-3xl font-bold">{{ comic.title }}</h4>
@@ -115,9 +149,17 @@ const handleLoadComments = async () => {
         <div class="font-medium flex items-center gap-2 my-1">
           Creator:
           <template v-if="Array.isArray(comic.authors)">
-            <NuxtLink v-for="author in comic.authors">
-              {{ author }}
-            </NuxtLink>
+            <div v-for="(author, idx) in comic.authors" :key="author">
+              <NuxtLink
+                :to="`/search?q=${author.replace(/\s+/g, '+')}`"
+                class="text-fuchsia-500"
+              >
+                {{ author }}
+              </NuxtLink>
+              <span class="select-none" v-if="idx < comic.authors.length - 1">
+                -
+              </span>
+            </div>
           </template>
           <template v-else-if="comic.authors === 'Updating'">
             <span class="flex items-center gap-1">
@@ -126,7 +168,10 @@ const handleLoadComments = async () => {
             </span>
           </template>
           <template v-else>
-            <NuxtLink>
+            <NuxtLink
+              :to="`/search?q=${comic.authors.replace(/\s+/g, '+')}`"
+              class="text-fuchsia-500"
+            >
               {{ comic.authors }}
             </NuxtLink>
           </template>
@@ -160,9 +205,21 @@ const handleLoadComments = async () => {
             </template>
           </span>
         </div>
-        <p class="mt-2" v-if="comic.description">
-          {{ comic.description.replace(/NetTruyen/g, 'NComics') }}
-        </p>
+        <div class="mt-2" v-if="comic.description">
+          <p
+            :class="showFullDesciption ? 'line-clamp-none' : 'line-clamp-5'"
+            ref="description"
+          >
+            {{ comic.description.replace(/NetTruyen/g, 'NComics') }}
+          </p>
+          <button
+            v-if="isTooLongDesciption"
+            class="font-semibold hover:underline"
+            @click="showFullDesciption = !showFullDesciption"
+          >
+            {{ showFullDesciption ? 'Show less' : 'Show more' }}
+          </button>
+        </div>
         <div class="flex items-center gap-3 mt-5">
           <NuxtLink
             :to="`/comic/${comic.id}/${comic.chapters.at(-1)?.id}`"
@@ -176,6 +233,12 @@ const handleLoadComments = async () => {
           >
             <Icon name="tabler:heart-plus" size="24" />
             Favorite
+          </button>
+          <button
+            class="flex flex-col ml-4 items-center text-sm font-semibold text-gray-700"
+          >
+            <Icon name="octicon:download-16" size="28" />
+            Download
           </button>
         </div>
       </div>
@@ -203,7 +266,7 @@ const handleLoadComments = async () => {
           Comments
         </button>
       </div>
-      <div v-if="currentTab === 'chapters'">
+      <div v-show="currentTab === 'chapters'">
         <div
           class="flex items-center gap-3 my-5 text-gray-800 font-medium flex-wrap"
         >
@@ -240,7 +303,7 @@ const handleLoadComments = async () => {
           </NuxtLink>
         </ul>
       </div>
-      <template v-else>
+      <div v-show="currentTab === 'comments'">
         <Comments :comments="comments" />
         <div class="w-max mx-auto mt-4">
           <Icon name="line-md:loading-loop" size="42" v-if="isFetching" />
@@ -252,7 +315,9 @@ const handleLoadComments = async () => {
             Load more
           </button>
         </div>
-      </template>
+      </div>
     </div>
   </div>
+  <!-- Download -->
+  <!-- <div class="fixed inset-0 bg-[rgba()]"></div> -->
 </template>

@@ -34,9 +34,10 @@ await getComics(currentQuery);
 
 const handleChangeTab = (tab: string) => {
   currentTab.value = tab;
+  const { page, ...query } = route.query;
   router.replace({
     query: {
-      ...route.query,
+      ...query,
       tab,
     },
   });
@@ -44,21 +45,31 @@ const handleChangeTab = (tab: string) => {
 
 const handleFilter = (value: string) => {
   filterValue.value = value;
+  const { filter, page, ...query } = route.query;
   if (value === 'all') {
-    const { filter, ...query } = route.query;
     router.replace({ query });
     return;
   }
-  router.replace({ query: { ...route.query, filter: value } });
+  router.replace({ query: { ...query, filter: value } });
 };
 
 watch([currentTab, route], async ([newTab, route]) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   const page = route.query.page || 1;
   await getComics(newTab, Number(page));
 });
 </script>
 
 <template>
+  <Head>
+    <Title>{{
+      `${
+        topRoutes.find((route) => route.type === currentTab)?.name +
+          ` - Page ${route.query.page ?? 1}` || 'Genres'
+      } | NComics`
+    }}</Title>
+    <Meta name="description" content="Free comic and manga reader online" />
+  </Head>
   <main class="max-w-6xl mx-auto">
     <ul class="flex flex-wrap items-center gap-3 mt-5">
       <li

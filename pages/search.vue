@@ -56,7 +56,7 @@ watch(route, async (route) => {
           </h3>
           <p class="flex items-center gap-1 text-emerald-500">
             <template v-if="Array.isArray(comic.authors)">
-              {{ comic.authors.join('|') }}
+              {{ comic.authors.join(' | ') }}
             </template>
             <template v-else-if="comic.authors === 'Updating'">
               <Icon name="mdi:dots-circle" size="16" />
@@ -73,7 +73,7 @@ watch(route, async (route) => {
               :key="genre.id"
               class="bg-cyan-100 text-cyan-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
             >
-              {{ genre.title }}
+              {{ genre.name }}
             </li>
           </ul>
         </div>
