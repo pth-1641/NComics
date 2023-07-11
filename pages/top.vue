@@ -30,7 +30,9 @@ const getComics = async (tab: string, page: number = 1) => {
 
 const currentQuery = route.query.tab as string;
 currentTab.value = currentQuery || 'all';
-await getComics(currentQuery);
+const page = route.query.page;
+const p = page && !isNaN(+page) ? Number(route.query.page) : 1;
+await getComics(currentQuery, p);
 
 const handleChangeTab = (tab: string) => {
   currentTab.value = tab;

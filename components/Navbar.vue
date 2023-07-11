@@ -1,16 +1,14 @@
 <script lang="ts" setup>
 import { routes } from '@/utils/data';
 
-const route = useRoute();
-
 const searchValue = ref<string>('');
 const suggestComics = ref<any>([]);
 const showSuggest = ref<boolean>(false);
-const showHeader = ref<boolean>(true);
+const searchInput = ref<any>(null);
 
 const handleSelectComic = (comicId: string) => {
-  showSuggest.value = false;
   navigateTo(`/comic/${comicId}`);
+  searchInput.value.blur();
 };
 
 let timeout: any;
@@ -25,19 +23,15 @@ watch(searchValue, (newValue) => {
       `/search-suggest?q=${newValue.replace(/\s+/g, '+')}`
     );
     suggestComics.value = result;
+    if (!(searchInput.value === document.activeElement)) return;
     showSuggest.value = result.length;
   }, 200);
 });
-
-watch(route, (route) => {
-  showHeader.value = !route.params.chapterId;
-});
-
 onBeforeUnmount(() => clearTimeout(timeout));
 </script>
 
 <template>
-  <header class="shadow bg-white relative z-50" v-show="showHeader">
+  <header class="shadow bg-white relative z-50">
     <nav class="max-w-7xl h-14 mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2 h-full">
         <NuxtLink to="/" class="flex items-center gap-2 h-full select-none">
@@ -71,7 +65,10 @@ onBeforeUnmount(() => clearTimeout(timeout));
         <form
           class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 mx-4 relative"
           @submit.prevent="
-            navigateTo(`/search?q=${searchValue.replace(/\s+/g, '+')}`)
+            () => {
+              searchInput.blur();
+              navigateTo(`/search?q=${searchValue.replace(/\s+/g, '+')}`);
+            }
           "
         >
           <input
@@ -79,6 +76,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
             class="outline-none text-sm pl-3 rounded-full"
             placeholder="Search comics/authors"
             v-model="searchValue"
+            ref="searchInput"
             @focus="showSuggest = suggestComics.length > 0"
             @blur="showSuggest = false"
           />
@@ -87,7 +85,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           </button>
           <ul
             class="absolute top-11 left-1/2 -translate-x-1/2 w-72 h-max max-h-80 overflow-auto shadow rounded bg-white"
-            v-if="showSuggest"
+            v-show="showSuggest"
           >
             <li
               v-for="comic in suggestComics"

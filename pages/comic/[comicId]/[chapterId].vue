@@ -82,6 +82,10 @@ onBeforeMount(async () => {
 onMounted(() => document.addEventListener('scroll', getElementsPos));
 onBeforeUnmount(() => document.removeEventListener('scroll', getElementsPos));
 
+watch(openComments, (status) => {
+  document.body.style.overflow = status ? 'hidden' : 'auto';
+});
+
 useSeoMeta(
   meta({
     title: `${comic_name} - ${chapter_name} | NComics`,

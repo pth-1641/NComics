@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ComicDetail, ComicComments, Comment } from '@/types';
 import { meta } from '@/utils/data';
+import { downloadPdf } from '@/utils/downloadPdf';
 
 type Chapter = {
   name: string;
@@ -9,7 +10,7 @@ type Chapter = {
 type Tab = 'chapters' | 'comments';
 
 const route = useRoute();
-const comicId = route.params.comicId;
+const comicId = route.params.comicId as string;
 const CHAPTER_PER_PAGE = 50;
 
 const chaptersSection = ref<Chapter[]>([]);
@@ -23,6 +24,10 @@ const currentChapterPage = ref<number>(0);
 const isFetching = ref<boolean>(false);
 const isTooLongDesciption = ref<boolean>(false);
 const showFullDesciption = ref<boolean>(false);
+const isDownload = ref<boolean>(false);
+
+const showDownloadModal = ref<boolean>(false);
+const downloadChapters = ref<number[]>([]);
 
 const data = (async () => {
   const [comic, commentsData]: [ComicDetail, ComicComments] = await Promise.all(
@@ -36,7 +41,7 @@ const data = (async () => {
 })();
 
 const { comic } = await data;
-const newestChapter = comic.chapters[0].name.match(/\d+(\.\d+)?/)?.[0];
+const newestChapter = comic.chapters[0]?.name.match(/\d+(\.\d+)?/)?.[0];
 const totalChapterPage = Math.ceil(Number(newestChapter) / CHAPTER_PER_PAGE);
 
 const getChapter = (start: number, end: number) => {
@@ -79,9 +84,39 @@ const handleLoadComments = async () => {
   }
 };
 
+const handleAddDownloadChapter = (chapterId: number) => {
+  if (isDownload.value) return;
+  if (downloadChapters.value.includes(chapterId)) {
+    const chapterIdx = downloadChapters.value.indexOf(chapterId);
+    downloadChapters.value.splice(chapterIdx, 1);
+  } else {
+    downloadChapters.value = [...downloadChapters.value, chapterId];
+  }
+};
+
+const handleDownloadChapters = async () => {
+  try {
+    isDownload.value = true;
+    for (const chapter of downloadChapters.value) {
+      const id = await downloadPdf({ chapter, comicId });
+      downloadChapters.value = downloadChapters.value.filter(
+        (chapter) => chapter !== id
+      );
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    isDownload.value = false;
+  }
+};
+
 onMounted(() => {
   const { clientHeight, scrollHeight } = description.value;
   isTooLongDesciption.value = clientHeight < scrollHeight;
+});
+
+watch(showDownloadModal, (status) => {
+  document.body.style.overflow = status ? 'hidden' : 'auto';
 });
 
 useSeoMeta(
@@ -236,8 +271,9 @@ useServerSeoMeta(
           </button>
           <button
             class="flex flex-col ml-4 items-center text-sm font-semibold text-gray-700"
+            @click="showDownloadModal = true"
           >
-            <Icon name="octicon:download-16" size="28" />
+            <Icon name="octicon:download-16" size="24" />
             Download
           </button>
         </div>
@@ -319,5 +355,55 @@ useServerSeoMeta(
     </div>
   </div>
   <!-- Download -->
-  <!-- <div class="fixed inset-0 bg-[rgba()]"></div> -->
+  <div
+    :class="`fixed z-50 inset-0 bg-[rgba(0,0,0,0.8)] flex flex-col items-center justify-center duration-200 ${
+      showDownloadModal
+        ? 'opacity-1 pointer-events-auto'
+        : 'opacity-0 pointer-events-none'
+    }`"
+  >
+    <img
+      src="@/assets/img/download_girls.webp"
+      alt="Download"
+      draggable="false"
+    />
+    <div class="bg-white rounded-lg py-4 px-6 w-full max-w-3xl">
+      <h3 class="text-2xl font-semibold">Select chapters</h3>
+      <ul
+        class="grid grid-cols-5 gap-3 max-h-[45vh] overflow-auto my-3 py-1 pr-1"
+      >
+        <li
+          v-for="chapter in comic.chapters"
+          :key="chapter.id"
+          :class="`border rounded px-2 py-1 cursor-pointer duration-100 ${
+            downloadChapters.includes(chapter.id)
+              ? 'border-emerald-500 bg-emerald-500 text-white'
+              : ''
+          }`"
+          @click="handleAddDownloadChapter(chapter.id)"
+        >
+          {{ chapter.name }}
+        </li>
+      </ul>
+      <div class="flex items-center justify-end gap-5 font-medium">
+        <button class="text-rose-500" @click="showDownloadModal = false">
+          Cancel
+        </button>
+        <button
+          :class="`text-white px-2.5 py-1.5 rounded flex items-center gap-1.5 ${
+            isDownload ? 'bg-gray-500' : 'bg-emerald-500 '
+          }`"
+          @click="handleDownloadChapters"
+          :disabled="isDownload"
+        >
+          <Icon
+            name="line-md:loading-twotone-loop"
+            size="24"
+            v-show="isDownload"
+          />
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
 </template>

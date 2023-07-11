@@ -1,20 +1,28 @@
 <script lang="ts" setup>
 const showFloatIcon = ref<boolean>(false);
+const isInReading = ref<boolean>(false);
 
-onMounted(() =>
+const route = useRoute();
+
+onMounted(() => {
+  isInReading.value = !!route.params.chapterId;
   document.addEventListener('scroll', () => {
     const heightOffset = document.documentElement.scrollTop;
     showFloatIcon.value = heightOffset > 2000;
-  })
-);
+  });
+});
 
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+watch(route, (route) => {
+  isInReading.value = !!route.params.chapterId;
+});
 </script>
 
 <template>
-  <Navbar />
+  <Navbar v-show="!isInReading" />
   <slot />
   <button
     @click="scrollToTop"
@@ -26,5 +34,5 @@ const scrollToTop = () => {
   >
     <Icon name="fluent:rocket-20-regular" size="30" />
   </button>
-  <Footer />
+  <Footer v-show="!isInReading" />
 </template>
