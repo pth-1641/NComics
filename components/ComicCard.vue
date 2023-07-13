@@ -25,12 +25,15 @@ const {
     <div
       class="flex gap-1 absolute font-semibold top-0 inset-x-0 z-10 text-xs text-white"
     >
-      <span v-if="is_trending" class="bg-rose-500 py-0.5 px-2 rounded-b-sm">
+      <span
+        v-if="is_trending"
+        class="bg-rose-500 py-0.5 px-2 rounded-b-sm first:rounded-bl-none"
+      >
         Hot
       </span>
       <span
         v-if="status === 'Completed'"
-        class="bg-sky-500 py-0.5 px-2 rounded-b-sm"
+        class="bg-sky-500 py-0.5 px-2 rounded-b-sm first:rounded-bl-none"
       >
         End
       </span>
@@ -39,7 +42,7 @@ const {
           updated_at.includes('trước') &&
           Number(updated_at.match(/\d+/)?.[0]) <= 3
         "
-        class="bg-amber-400 py-0.5 px-2 rounded-b-sm"
+        class="bg-amber-400 py-0.5 px-2 rounded-b-sm first:rounded-bl-none"
       >
         Up
       </span>

@@ -2,8 +2,6 @@
 import { ComicComments, ComicDetail, Comment } from '@/types';
 import { meta } from '@/utils/data';
 
-globalThis.Buffer = Buffer;
-
 type Chapter = {
   name: string;
   id: number;
@@ -25,7 +23,6 @@ const currentChapterPage = ref<number>(0);
 const isFetching = ref<boolean>(false);
 const isTooLongDesciption = ref<boolean>(false);
 const showFullDesciption = ref<boolean>(false);
-const isDownload = ref<boolean>(false);
 
 const showDownloadModal = ref<boolean>(false);
 const downloadChapters = ref<number[]>([]);
@@ -86,7 +83,6 @@ const handleLoadComments = async () => {
 };
 
 const handleAddDownloadChapter = (chapterId: number) => {
-  if (isDownload.value) return;
   if (downloadChapters.value.includes(chapterId)) {
     const chapterIdx = downloadChapters.value.indexOf(chapterId);
     downloadChapters.value.splice(chapterIdx, 1);
@@ -97,7 +93,6 @@ const handleAddDownloadChapter = (chapterId: number) => {
 
 const handleDownloadChapters = async () => {
   try {
-    isDownload.value = true;
     for (const chapterId of downloadChapters.value) {
       const href = `/api/download?comicId=${comicId}&chapterId=${chapterId}`;
       const a = document.createElement('a');
@@ -109,10 +104,10 @@ const handleDownloadChapters = async () => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(href);
     }
+    showDownloadModal.value = false;
+    downloadChapters.value = [];
   } catch (err) {
     console.log(err);
-  } finally {
-    isDownload.value = false;
   }
 };
 
@@ -161,13 +156,13 @@ useServerSeoMeta(
         >
           <span
             v-if="comic.status === 'Finished'"
-            class="bg-sky-500 py-0.5 px-2 rounded-b-sm"
+            class="bg-sky-500 py-0.5 px-2 rounded-b-sm first:rounded-bl-none"
           >
             End
           </span>
           <span
             v-if="comic.is_adult"
-            class="bg-rose-500 py-0.5 px-2 rounded-b-sm"
+            class="bg-rose-500 py-0.5 px-2 rounded-b-sm first:rounded-bl-none"
           >
             18+
           </span>
@@ -396,17 +391,9 @@ useServerSeoMeta(
           Cancel
         </button>
         <button
-          :class="`text-white px-2.5 py-1.5 rounded flex items-center gap-1.5 ${
-            isDownload ? 'bg-gray-500' : 'bg-emerald-500 '
-          }`"
+          class="text-white px-2.5 py-1.5 rounded flex items-center gap-1.5 bg-emerald-500"
           @click="handleDownloadChapters"
-          :disabled="isDownload"
         >
-          <Icon
-            name="line-md:loading-twotone-loop"
-            size="24"
-            v-show="isDownload"
-          />
           Download
         </button>
       </div>

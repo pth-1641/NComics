@@ -9,7 +9,7 @@ reactive({
 </script>
 
 <template>
-  <div class="grid gap-6 mt-5">
+  <div class="grid gap-6 mt-5 overflow-auto">
     <div class="flex gap-3" v-for="comment in comments">
       <img
         :src="comment.avatar"
@@ -26,14 +26,16 @@ reactive({
           <img
             v-for="sticker in comment.stickers"
             :src="sticker"
-            class="max-w-[150px] object-cover rounded-sm h-max"
+            class="max-w-[150px] object-cover rounded h-max"
             alt="NComics"
             draggable="false"
           />
         </div>
-        <p class="text-sm text-gray-600 mt-1 flex items-center gap-4">
+        <p
+          class="text-xs font-medium text-gray-600 mt-1 flex items-center gap-4"
+        >
           {{ comment.created_at }}
-          <span class="flex items-center gap-0.5">
+          <span class="flex items-center gap-0.5 text-sm">
             <Icon name="iconamoon:like-thin" size="16" />
             {{ comment.vote_count }}
           </span>
@@ -66,14 +68,16 @@ reactive({
                     <img
                       v-for="sticker in reply.stickers"
                       :src="sticker"
-                      class="max-w-[150px] object-cover rounded-sm h-max"
+                      class="max-w-[150px] object-cover rounded h-max"
                       alt="NComics"
                       draggable="false"
                     />
                   </div>
-                  <p class="text-sm text-gray-600 mt-1 flex items-center gap-4">
+                  <p
+                    class="text-xs text-gray-600 mt-1 flex items-center gap-4 font-medium"
+                  >
                     {{ reply.created_at }}
-                    <span class="flex items-center gap-0.5">
+                    <span class="flex items-center gap-0.5 text-sm">
                       <Icon name="iconamoon:like-thin" size="16" />
                       {{ reply.vote_count }}
                     </span>

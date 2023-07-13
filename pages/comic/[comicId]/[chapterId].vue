@@ -3,7 +3,7 @@ import { Comment } from '@/types';
 
 const currentPage = ref<number>(1);
 const inputRangeVal = ref<number>(1);
-const commentPage = ref<number>(1);
+const commentPage = ref<number>(0);
 
 const openEpisode = ref<boolean>(false);
 const showToolbar = ref<boolean>(true);
@@ -92,10 +92,11 @@ const getElementsPos = () => {
   }
 };
 
-onBeforeMount(async () => {
+onMounted(async () => {
+  document.addEventListener('scroll', getElementsPos);
+  currentPage.value = 1;
   totalComments.value = await getComments();
 });
-onMounted(() => document.addEventListener('scroll', getElementsPos));
 onBeforeUnmount(() => document.removeEventListener('scroll', getElementsPos));
 
 watch(openComments, (status) => {
@@ -136,7 +137,7 @@ useServerSeoMeta(
         @click="handleCloseComments"
       >
         <div
-          :class="`relative bg-white rounded-md duration-300 ${
+          :class="`relative w-full max-w-4xl bg-white rounded-md duration-300 ${
             openComments ? 'scale-1' : 'scale-0'
           }`"
         >
@@ -146,9 +147,7 @@ useServerSeoMeta(
             class="cursor-pointer absolute top-3 right-3"
             @click="openComments = false"
           />
-          <div
-            class="w-full max-w-4xl max-h-[75vh] overflow-auto py-5 p-10 text-sm"
-          >
+          <div class="max-h-[75vh] overflow-auto py-5 p-10 text-sm">
             <h4 class="text-2xl font-bold text-zinc-600">Comments</h4>
             <Comments :comments="comments" />
             <div class="w-max mx-auto pb-2 mt-6" v-if="!isEnd">
@@ -235,7 +234,7 @@ useServerSeoMeta(
                   :to="`/comic/${comicId}/${chapter.id}`"
                   :key="chapter.id"
                   :class="`py-2 block truncate px-5 duration-100 hover:bg-zinc-950 ${
-                    chapter.id == chapterId ? 'text-emerald-500' : ''
+                    chapter.id == chapterId ? 'text-emerald-500 font-bold' : ''
                   }`"
                   :id="chapter.id"
                 >
