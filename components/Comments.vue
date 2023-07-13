@@ -35,7 +35,7 @@ reactive({
           class="text-xs font-medium text-gray-600 mt-1 flex items-center gap-4"
         >
           {{ comment.created_at }}
-          <span class="flex items-center gap-0.5 text-sm">
+          <span class="flex items-center gap-0.5 text-sm font-normal">
             <Icon name="iconamoon:like-thin" size="16" />
             {{ comment.vote_count }}
           </span>
@@ -77,7 +77,7 @@ reactive({
                     class="text-xs text-gray-600 mt-1 flex items-center gap-4 font-medium"
                   >
                     {{ reply.created_at }}
-                    <span class="flex items-center gap-0.5 text-sm">
+                    <span class="flex items-center gap-0.5 text-sm font-normal">
                       <Icon name="iconamoon:like-thin" size="16" />
                       {{ reply.vote_count }}
                     </span>

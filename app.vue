@@ -1,3 +1,9 @@
+<script lang="ts" setup>
+import { initLocalDb } from './utils/localDb';
+
+onBeforeMount(() => initLocalDb());
+</script>
+
 <template>
   <NuxtLayout>
     <NuxtLoadingIndicator />

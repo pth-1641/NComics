@@ -21,9 +21,12 @@ const commentPage = ref<number>(1);
 const currentChapterPage = ref<number>(0);
 
 const isFetching = ref<boolean>(false);
-const isTooLongDesciption = ref<boolean>(false);
-const showFullDesciption = ref<boolean>(false);
+const isTooLongDescription = ref<boolean>(false);
+const showFullDescription = ref<boolean>(false);
 
+const showChapterSelection = ref<boolean>(false);
+const currentDownloadChapterPage = ref<number>(0);
+const chaptersDownloadSection = ref<Chapter[]>([]);
 const showDownloadModal = ref<boolean>(false);
 const downloadChapters = ref<number[]>([]);
 
@@ -58,10 +61,19 @@ const getChapter = (start: number, end: number) => {
 };
 
 chaptersSection.value = getChapter(0, CHAPTER_PER_PAGE);
+chaptersDownloadSection.value = getChapter(0, CHAPTER_PER_PAGE);
 
 const handleChangeChapterGroup = (idx: number) => {
   currentChapterPage.value = idx;
   chaptersSection.value = getChapter(
+    idx === 0 ? 0 : idx * CHAPTER_PER_PAGE + 1,
+    (idx + 1) * CHAPTER_PER_PAGE
+  );
+};
+
+const handleChangeChapterDownloadGroup = (idx: number) => {
+  currentDownloadChapterPage.value = idx;
+  chaptersDownloadSection.value = getChapter(
     idx === 0 ? 0 : idx * CHAPTER_PER_PAGE + 1,
     (idx + 1) * CHAPTER_PER_PAGE
   );
@@ -113,7 +125,7 @@ const handleDownloadChapters = async () => {
 
 onMounted(() => {
   const { clientHeight, scrollHeight } = description.value;
-  isTooLongDesciption.value = clientHeight < scrollHeight;
+  isTooLongDescription.value = clientHeight < scrollHeight;
 });
 
 watch(showDownloadModal, (status) => {
@@ -243,17 +255,17 @@ useServerSeoMeta(
         </div>
         <div class="mt-2" v-if="comic.description">
           <p
-            :class="showFullDesciption ? 'line-clamp-none' : 'line-clamp-5'"
+            :class="showFullDescription ? 'line-clamp-none' : 'line-clamp-5'"
             ref="description"
           >
             {{ comic.description.replace(/NetTruyen/g, 'NComics') }}
           </p>
           <button
-            v-if="isTooLongDesciption"
+            v-if="isTooLongDescription"
             class="font-semibold hover:underline"
-            @click="showFullDesciption = !showFullDesciption"
+            @click="showFullDescription = !showFullDescription"
           >
-            {{ showFullDesciption ? 'Show less' : 'Show more' }}
+            {{ showFullDescription ? 'Show less' : 'Show more' }}
           </button>
         </div>
         <div class="flex items-center gap-3 mt-5">
@@ -266,12 +278,6 @@ useServerSeoMeta(
           </NuxtLink>
           <button
             class="flex items-center gap-1 rounded border-2 border-emerald-500 text-emerald-500 text-lg px-6 py-2 font-medium"
-          >
-            <Icon name="tabler:heart-plus" size="24" />
-            Favorite
-          </button>
-          <button
-            class="flex flex-col ml-4 items-center text-sm font-semibold text-gray-700"
             @click="showDownloadModal = true"
           >
             <Icon name="octicon:download-16" size="24" />
@@ -324,7 +330,11 @@ useServerSeoMeta(
               }}
             </template>
             <template v-else>
-              {{ `${idx * CHAPTER_PER_PAGE + 1} - ${newestChapter}` }}
+              {{
+                `${
+                  totalChapterPage === 1 ? 0 : idx * CHAPTER_PER_PAGE + 1
+                } - ${newestChapter}`
+              }}
             </template>
           </button>
         </div>
@@ -369,12 +379,50 @@ useServerSeoMeta(
       draggable="false"
     />
     <div class="bg-white rounded-lg py-4 px-6 w-full max-w-3xl">
-      <h3 class="text-2xl font-semibold">Select chapters</h3>
+      <div class="flex items-center gap-5">
+        <h3 class="text-2xl font-semibold">Select chapters</h3>
+        <div
+          class="border rounded px-3 py-1 relative cursor-pointer"
+          @click="showChapterSelection = !showChapterSelection"
+        >
+          Chapters
+          <Icon name="icon-park-outline:down" size="24" class="ml-2" />
+          <ul
+            class="absolute top-10 w-40 right-1/2 translate-x-1/2 border rounded bg-white max-h-60 overflow-auto"
+            v-show="showChapterSelection"
+          >
+            <li
+              v-for="(_, idx) in new Array(totalChapterPage)"
+              :class="`px-2 py-1 border-b last:border-b-0 ${
+                idx === currentDownloadChapterPage
+                  ? 'text-emerald-500 font-medium'
+                  : ''
+              }`"
+              @click="handleChangeChapterDownloadGroup(idx)"
+            >
+              <template v-if="idx + 1 < totalChapterPage">
+                {{
+                  `${idx === 0 ? 0 : idx * CHAPTER_PER_PAGE + 1} - ${
+                    (idx + 1) * CHAPTER_PER_PAGE
+                  }`
+                }}
+              </template>
+              <template v-else>
+                {{
+                  `${
+                    totalChapterPage === 1 ? 0 : idx * CHAPTER_PER_PAGE + 1
+                  } - ${newestChapter}`
+                }}
+              </template>
+            </li>
+          </ul>
+        </div>
+      </div>
       <ul
         class="grid grid-cols-5 gap-3 max-h-[45vh] overflow-auto my-3 py-1 pr-1 select-none"
       >
         <li
-          v-for="chapter in comic.chapters"
+          v-for="chapter in chaptersDownloadSection"
           :key="chapter.id"
           :class="`border rounded px-2 py-1 cursor-pointer duration-100 truncate ${
             downloadChapters.includes(chapter.id)

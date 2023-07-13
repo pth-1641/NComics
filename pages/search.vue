@@ -45,7 +45,7 @@ watch(route, async (route) => {
     </div>
     <h4
       class="text-2xl text-center mt-8 font-semibold text-gray-600"
-      v-show="comics.length === 0"
+      v-show="!isFetching && !comics.length"
     >
       No result
     </h4>

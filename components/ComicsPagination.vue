@@ -5,6 +5,7 @@ type ComicsPaginationProps = {
   isFetching: boolean;
   title?: string;
   icon?: string;
+  isHistory?: boolean;
 };
 
 const currentPage = ref<number>(1);
@@ -12,7 +13,7 @@ const route = useRoute();
 const router = useRouter();
 
 const props = defineProps<ComicsPaginationProps>();
-const { icon, title } = props;
+const { icon, title, isHistory } = props;
 reactive({
   comics: props.comics,
   totalPages: props.totalPages,
@@ -51,7 +52,7 @@ const handleChangePage = async (page: number) => {
       class="aspect-[2/3] rounded bg-gray-100 animation-pulse"
     />
     <div v-for="comic in comics" :key="comic.id" v-else>
-      <ComicCard :comic="comic" :detail="true" />
+      <ComicCard :is-history="isHistory" :comic="comic" :detail="true" />
     </div>
   </div>
   <vue-awesome-paginate

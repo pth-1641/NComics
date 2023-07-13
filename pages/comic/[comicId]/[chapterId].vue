@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { Comment } from '@/types';
+import { ComicDetail, Comment } from '@/types';
+import { historyAddComic } from '@/utils/localDb';
 
 const currentPage = ref<number>(1);
 const inputRangeVal = ref<number>(1);
@@ -95,7 +96,21 @@ const getElementsPos = () => {
 onMounted(async () => {
   document.addEventListener('scroll', getElementsPos);
   currentPage.value = 1;
-  totalComments.value = await getComments();
+  const [comments, comic]: [number, ComicDetail] = await Promise.all([
+    getComments(),
+    useAxios(`/comics/${comicId}`),
+  ]);
+  totalComments.value = comments;
+  const { authors, id, status, title, thumbnail, is_adult } = comic;
+  historyAddComic({
+    authors,
+    id,
+    is_adult,
+    status,
+    title,
+    thumbnail,
+    reading_at: new Date().getTime(),
+  });
 });
 onBeforeUnmount(() => document.removeEventListener('scroll', getElementsPos));
 
@@ -260,14 +275,6 @@ useServerSeoMeta(
               </span>
             </span>
             Comments
-          </button>
-          <button class="flex items-center gap-2">
-            <Icon
-              name="fluent:star-add-24-regular"
-              size="24"
-              class="text-white"
-            />
-            Favorite
           </button>
           <button class="flex items-center gap-2" @click="handleDownload">
             <Icon name="octicon:download-16" size="24" class="text-white" />

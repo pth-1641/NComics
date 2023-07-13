@@ -1,8 +1,12 @@
 <script lang="ts" setup>
 import { Comic } from 'types';
 
-const props = defineProps<{ comic: Comic; detail?: boolean }>();
-const { comic, detail } = props;
+const props = defineProps<{
+  comic: Comic;
+  detail?: boolean;
+  isHistory?: boolean;
+}>();
+const { comic, detail, isHistory = false } = props;
 const {
   authors,
   followers,
@@ -39,7 +43,7 @@ const {
       </span>
       <span
         v-if="
-          updated_at.includes('trước') &&
+          updated_at?.includes('trước') &&
           Number(updated_at.match(/\d+/)?.[0]) <= 3
         "
         class="bg-amber-400 py-0.5 px-2 rounded-b-sm first:rounded-bl-none"
@@ -82,6 +86,7 @@ const {
           </p>
           <div
             class="flex items-center justify-between text-emerald-400 text-xs py-1 mt-0.5"
+            v-if="!isHistory"
           >
             <span class="flex items-center gap-1 bg-white/25 px-1 rounded">
               <Icon name="carbon:view-filled" />

@@ -56,10 +56,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
         </ul>
       </div>
       <div class="flex items-center gap-3">
-        <NuxtLink to="favourite">
-          <Icon name="mdi:heart" size="30" class="text-rose-500" />
-        </NuxtLink>
-        <NuxtLink to="history">
+        <NuxtLink to="/history">
           <Icon name="ic:outline-history" size="30" class="text-blue-500" />
         </NuxtLink>
         <form
@@ -125,9 +122,6 @@ onBeforeUnmount(() => clearTimeout(timeout));
             </li>
           </ul>
         </form>
-        <button>
-          <Icon name="line-md:sunny-filled-loop" size="24" />
-        </button>
       </div>
     </nav>
   </header>
