@@ -58,6 +58,22 @@ const handleCloseComments = (e: Event) => {
   openComments.value = false;
 };
 
+const handleDownload = async () => {
+  try {
+    const href = `/api/download?comicId=${comicId}&chapterId=${chapterId}`;
+    const a = document.createElement('a');
+    a.href = href;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(href);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 watch(inputRangeVal, (newValue) => {
   const el = document.getElementById(newValue.toString());
   el?.scrollIntoView({ behavior: 'smooth' });
@@ -253,6 +269,10 @@ useServerSeoMeta(
               class="text-white"
             />
             Favorite
+          </button>
+          <button class="flex items-center gap-2" @click="handleDownload">
+            <Icon name="octicon:download-16" size="24" class="text-white" />
+            Download
           </button>
         </div>
       </div>

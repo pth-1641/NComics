@@ -4,7 +4,9 @@ import { dynamicRoutes } from '@/utils/data';
 const route = useRoute();
 
 const routeData = dynamicRoutes.find((r) => r.path === route.path);
-if (!routeData) navigateTo('/404');
+if (!routeData) {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
+}
 
 const comics = ref<any>();
 const isFetching = ref<boolean>(false);

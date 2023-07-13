@@ -6,7 +6,12 @@ export default defineNuxtConfig({
       crawlLinks: true,
     },
   },
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-icon', 'nuxt-swiper'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    'nuxt-icon',
+    'nuxt-swiper',
+    'nuxt-simple-robots',
+  ],
   devtools: { enabled: false },
   runtimeConfig: {
     public: {

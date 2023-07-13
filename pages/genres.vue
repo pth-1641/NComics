@@ -41,6 +41,9 @@ const [_, genresData] = await Promise.all([
   getComics(currentGenre.value, p),
   useAxios('/genres'),
 ]);
+if (!genresData.includes(route.params.type)) {
+  // throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
+}
 genres.value = genresData;
 initSlide.value = genresData.findIndex(
   (genre: Genre) => genre.id === currentGenre.value

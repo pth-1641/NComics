@@ -57,10 +57,10 @@ onBeforeUnmount(() => clearTimeout(timeout));
       </div>
       <div class="flex items-center gap-3">
         <NuxtLink to="favourite">
-          <Icon name="mdi:heart" size="30" />
+          <Icon name="mdi:heart" size="30" class="text-rose-500" />
         </NuxtLink>
         <NuxtLink to="history">
-          <Icon name="ic:outline-history" size="30" />
+          <Icon name="ic:outline-history" size="30" class="text-blue-500" />
         </NuxtLink>
         <form
           class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 mx-4 relative"
@@ -125,9 +125,9 @@ onBeforeUnmount(() => clearTimeout(timeout));
             </li>
           </ul>
         </form>
-        <NuxtLink to="history">
+        <button>
           <Icon name="line-md:sunny-filled-loop" size="24" />
-        </NuxtLink>
+        </button>
       </div>
     </nav>
   </header>

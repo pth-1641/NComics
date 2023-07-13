@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { ComicDetail, ComicComments, Comment } from '@/types';
+import { ComicComments, ComicDetail, Comment } from '@/types';
 import { meta } from '@/utils/data';
-import { downloadPdf } from '@/utils/downloadPdf';
+
+globalThis.Buffer = Buffer;
 
 type Chapter = {
   name: string;
@@ -97,11 +98,16 @@ const handleAddDownloadChapter = (chapterId: number) => {
 const handleDownloadChapters = async () => {
   try {
     isDownload.value = true;
-    for (const chapter of downloadChapters.value) {
-      const id = await downloadPdf({ chapter, comicId });
-      downloadChapters.value = downloadChapters.value.filter(
-        (chapter) => chapter !== id
-      );
+    for (const chapterId of downloadChapters.value) {
+      const href = `/api/download?comicId=${comicId}&chapterId=${chapterId}`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(href);
     }
   } catch (err) {
     console.log(err);
@@ -370,12 +376,12 @@ useServerSeoMeta(
     <div class="bg-white rounded-lg py-4 px-6 w-full max-w-3xl">
       <h3 class="text-2xl font-semibold">Select chapters</h3>
       <ul
-        class="grid grid-cols-5 gap-3 max-h-[45vh] overflow-auto my-3 py-1 pr-1"
+        class="grid grid-cols-5 gap-3 max-h-[45vh] overflow-auto my-3 py-1 pr-1 select-none"
       >
         <li
           v-for="chapter in comic.chapters"
           :key="chapter.id"
-          :class="`border rounded px-2 py-1 cursor-pointer duration-100 ${
+          :class="`border rounded px-2 py-1 cursor-pointer duration-100 truncate ${
             downloadChapters.includes(chapter.id)
               ? 'border-emerald-500 bg-emerald-500 text-white'
               : ''

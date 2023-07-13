@@ -12,13 +12,15 @@
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18",
+    "@types/pdfkit": "^0.12.10",
     "nuxt": "^3.6.1",
-    "nuxt-icon": "^0.4.2"
+    "nuxt-icon": "^0.4.2",
+    "nuxt-simple-robots": "^3.0.2"
   },
   "dependencies": {
     "axios": "^1.4.0",
-    "jspdf": "^2.5.1",
     "nuxt-swiper": "^1.1.1",
+    "pdfkit": "^0.13.0",
     "vue-awesome-paginate": "^1.1.46"
   }
 }
