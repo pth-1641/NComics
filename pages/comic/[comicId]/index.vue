@@ -32,7 +32,7 @@ const downloadChapters = ref<number[]>([]);
 
 const data = (async () => {
   const [comic, commentsData]: [ComicDetail, ComicComments] = await Promise.all(
-    [useAxios(`/comics/${comicId}`), useAxios(`/comics/${comicId}/comments`)]
+    [useData(`/comics/${comicId}`), useData(`/comics/${comicId}/comments`)]
   );
   comments.value = commentsData.comments;
   return {
@@ -83,7 +83,7 @@ const handleLoadComments = async () => {
   try {
     isFetching.value = true;
     commentPage.value += 1;
-    const data = await useAxios(
+    const data = await useData(
       `/comics/${comicId}/comments?page=${commentPage.value}`
     );
     comments.value = [...comments.value, ...data.comments];
@@ -164,7 +164,7 @@ useServerSeoMeta(
           draggable="false"
         />
         <div
-          class="flex gap-1 absolute font-semibold top-0 inset-x-0 z-10 text-xs text-white"
+          class="flex gap-1 absolute font-bold top-0 inset-x-0 z-10 text-xs text-white"
         >
           <span
             v-if="comic.status === 'Finished'"
@@ -181,11 +181,11 @@ useServerSeoMeta(
         </div>
       </div>
       <div class="col-span-3">
-        <h4 class="text-3xl font-bold">{{ comic.title }}</h4>
+        <h4 class="text-3xl font-extrabold">{{ comic.title }}</h4>
         <p class="mb-3 mt-1 text-sm font-semibold text-gray-700">
           {{ comic.other_names.join(' | ') }}
         </p>
-        <div class="font-medium text-sm flex flex-wrap items-center gap-2 my-1">
+        <div class="font-bold text-sm flex flex-wrap items-center gap-2 my-1">
           <NuxtLink
             v-for="genre in comic.genres"
             :to="`/genres?type=${genre.id}`"
@@ -194,7 +194,7 @@ useServerSeoMeta(
             {{ genre.name }}
           </NuxtLink>
         </div>
-        <div class="font-medium flex items-center gap-2 my-1">
+        <div class="font-semibold flex items-center gap-2 my-1">
           Creator:
           <template v-if="Array.isArray(comic.authors)">
             <div v-for="(author, idx) in comic.authors" :key="author">
@@ -224,7 +224,7 @@ useServerSeoMeta(
             </NuxtLink>
           </template>
         </div>
-        <div class="flex items-center font-medium text-gray-800 gap-4">
+        <div class="flex items-center font-bold text-gray-800 gap-4">
           <span class="flex items-center gap-1">
             <Icon name="carbon:view-filled" size="20" class="text-sky-500" />
             <template v-if="comic.total_views === 'Updating'">
@@ -268,16 +268,16 @@ useServerSeoMeta(
             {{ showFullDescription ? 'Show less' : 'Show more' }}
           </button>
         </div>
-        <div class="flex items-center gap-3 mt-5">
+        <div class="flex items-center gap-3 mt-5 font-bold">
           <NuxtLink
             :to="`/comic/${comic.id}/${comic.chapters.at(-1)?.id}`"
-            class="flex items-center gap-1 border-2 border-emerald-500 rounded bg-emerald-500 text-white text-lg px-6 py-2 font-medium"
+            class="flex items-center gap-1 border-2 border-emerald-500 rounded bg-emerald-500 text-white text-lg px-6 py-2"
           >
             <Icon name="carbon:book" size="24" />
             Read Now
           </NuxtLink>
           <button
-            class="flex items-center gap-1 rounded border-2 border-emerald-500 text-emerald-500 text-lg px-6 py-2 font-medium"
+            class="flex items-center gap-1 rounded border-2 border-emerald-500 text-emerald-500 text-lg px-6 py-2"
             @click="showDownloadModal = true"
           >
             <Icon name="octicon:download-16" size="24" />
@@ -287,9 +287,7 @@ useServerSeoMeta(
       </div>
     </div>
     <div class="max-w-5xl mx-auto">
-      <div
-        class="flex items-center gap-6 font-semibold text-xl border-b-2 py-1"
-      >
+      <div class="flex items-center gap-6 font-bold text-xl border-b-2 py-1">
         <button
           :class="`flex items-center gap-1 ${
             currentTab === 'chapters' ? 'text-emerald-500' : ''
@@ -311,7 +309,7 @@ useServerSeoMeta(
       </div>
       <div v-show="currentTab === 'chapters'">
         <div
-          class="flex items-center gap-3 my-5 text-gray-800 font-medium flex-wrap"
+          class="flex items-center gap-3 my-5 text-gray-800 font-semibold text-sm flex-wrap"
         >
           <button
             v-for="(_, idx) in new Array(totalChapterPage)"

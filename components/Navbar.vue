@@ -19,7 +19,7 @@ watch(searchValue, (newValue) => {
   }
   if (timeout) clearTimeout(timeout);
   timeout = setTimeout(async () => {
-    const result = await useAxios(
+    const result = await useData(
       `/search-suggest?q=${newValue.replace(/\s+/g, '+')}`
     );
     suggestComics.value = result;
@@ -47,7 +47,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           <li v-for="route in routes" :key="route.path">
             <NuxtLink
               :to="route.path"
-              class="px-4 py-2 duration-150 font-medium hover:text-emerald-500"
+              class="px-4 py-2 duration-150 font-bold hover:text-emerald-500"
               active-class="bg-emerald-500 rounded-full text-white hover:text-white"
             >
               {{ route.name }}
@@ -96,14 +96,14 @@ onBeforeUnmount(() => clearTimeout(timeout));
                 class="border border-emerald-500 w-16 h-24 object-cover object-center rounded"
               />
               <div>
-                <h6 class="font-medium text-sm">
+                <h6 class="font-bold text-sm">
                   {{ comic.title }}
                   <span class="font-normal">
                     ({{ comic.lastest_chapter }})
                   </span>
                 </h6>
                 <p
-                  class="text-sm font-medium text-emerald-500 flex items-center gap-1"
+                  class="text-sm font-bold text-emerald-500 flex items-center gap-1"
                 >
                   <template v-if="comic.authors === 'Updating'">
                     <Icon name="mdi:dots-circle" size="16" />
@@ -113,7 +113,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
                     {{ comic.authors.join(' | ') }}
                   </template>
                 </p>
-                <p class="text-xs font-medium flex items-center">
+                <p class="text-xs font-semibold flex items-center">
                   <template v-if="Array.isArray(comic.genres)">
                     {{ comic.genres.join(', ') }}
                   </template>

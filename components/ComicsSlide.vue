@@ -12,7 +12,7 @@ const { comics, title, icon, link } = props;
 
 <template>
   <div class="flex items-center justify-between mb-4 mt-12">
-    <h2 class="flex items-center gap-2 text-3xl font-semibold">
+    <h2 class="flex items-center gap-2 text-3xl font-bold">
       <Icon :name="icon" size="36" class="text-emerald-500" />
       {{ title }}
     </h2>

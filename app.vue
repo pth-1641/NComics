@@ -52,3 +52,38 @@ html {
   background-color: #888;
 }
 </style>
+
+<style>
+@font-face {
+  font-family: Nunito;
+  font-weight: 400;
+  src: url(@/assets/fonts/Nunito-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: Nunito;
+  font-weight: 500;
+  src: url(@/assets/fonts/Nunito-Medium.ttf) format('truetype');
+}
+@font-face {
+  font-family: Nunito;
+  font-weight: 600;
+  src: url(@/assets/fonts/Nunito-SemiBold.ttf) format('truetype');
+}
+@font-face {
+  font-family: Nunito;
+  font-weight: 700;
+  src: url(@/assets/fonts/Nunito-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: Nunito;
+  font-weight: 800;
+  src: url(@/assets/fonts/Nunito-ExtraBold.ttf) format('truetype');
+}
+
+html {
+  font-family: Nunito, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+</style>

@@ -1,3 +1,3 @@
-import { useAxios } from './useAxios';
+import { useData } from './useData';
 
-export { useAxios };
+export { useData };

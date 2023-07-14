@@ -61,14 +61,14 @@ const {
       class="absolute top-1/2 bottom-0 inset-x-0 flex flex-col justify-end px-4 py-2 bg-gradient-to-b from-transparent to-black"
     >
       <h5
-        class="font-semibold leading-5 text-lg text-white group-hover:text-emerald-400 text-shadow duration-200 line-clamp-2"
+        class="font-bold leading-5 text-lg text-white group-hover:text-emerald-400 text-shadow duration-200 line-clamp-2"
       >
         <abbr :title="title" class="no-underline">{{ title }}</abbr>
       </h5>
       <template v-if="detail">
         <hr class="mt-3 mb-0.5 border-gray-500" />
         <div>
-          <p class="text-sm text-gray-300 truncate font-medium">
+          <p class="text-sm text-gray-300 truncate font-semibold">
             <template v-if="Array.isArray(authors)">
               {{ authors.join(' | ') }}
             </template>

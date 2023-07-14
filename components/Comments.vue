@@ -18,7 +18,7 @@ reactive({
         draggable="false"
       />
       <div>
-        <h5 class="font-medium">
+        <h5 class="font-bold">
           {{ comment.username }}
         </h5>
         <p class="break-word">{{ comment.content }}</p>
@@ -32,7 +32,7 @@ reactive({
           />
         </div>
         <p
-          class="text-xs font-medium text-gray-600 mt-1 flex items-center gap-4"
+          class="text-xs font-semibold text-gray-600 mt-1 flex items-center gap-4"
         >
           {{ comment.created_at }}
           <span class="flex items-center gap-0.5 text-sm font-normal">
@@ -57,9 +57,9 @@ reactive({
                   draggable="false"
                 />
                 <div>
-                  <h5 class="font-medium">{{ reply.username }}</h5>
+                  <h5 class="font-bold">{{ reply.username }}</h5>
                   <p class="break-word">
-                    <span class="text-emerald-500 font-medium">
+                    <span class="text-emerald-500 font-bold">
                       {{ reply.mention_user }}
                     </span>
                     {{ reply.content }}
@@ -74,7 +74,7 @@ reactive({
                     />
                   </div>
                   <p
-                    class="text-xs text-gray-600 mt-1 flex items-center gap-4 font-medium"
+                    class="text-xs text-gray-600 mt-1 flex items-center gap-4 font-semibold"
                   >
                     {{ reply.created_at }}
                     <span class="flex items-center gap-0.5 text-sm font-normal">

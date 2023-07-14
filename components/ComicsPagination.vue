@@ -16,7 +16,7 @@ const props = defineProps<ComicsPaginationProps>();
 const { icon, title, isHistory } = props;
 reactive({
   comics: props.comics,
-  totalPages: props.totalPages,
+  totalPages: props.totalPages || 0,
   isFetching: props.isFetching,
 });
 
@@ -38,7 +38,7 @@ const handleChangePage = async (page: number) => {
 
 <template>
   <h2
-    class="flex items-center gap-2 text-3xl font-semibold mb-4 mt-12"
+    class="flex items-center gap-2 text-3xl font-bold mb-4 mt-12"
     v-if="title"
   >
     <Icon :name="icon" size="36" class="text-emerald-500" />

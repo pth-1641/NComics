@@ -14,7 +14,7 @@ const router = useRouter();
 const getComics = async (tab: string, page: number = 1) => {
   try {
     isFetching.value = true;
-    const data = await useAxios(
+    const data = await useData(
       `/top/${tab === 'all' ? '' : tab}?page=${page}&status=${
         filterValue.value
       }`
@@ -86,10 +86,10 @@ watch([currentTab, route], async ([newTab, route]) => {
         {{ route.name }}
       </li>
     </ul>
-    <ul class="flex items-center gap-5 mb-5 mt-3">
+    <ul class="flex items-center gap-5 mb-5 mt-3 font-semibold">
       <li
         v-for="item in filterValues"
-        :class="`min-w-[60px] cursor-pointer text-center border px-3 py-1.5 rounded font-medium ${
+        :class="`min-w-[60px] cursor-pointer text-center border px-3 py-1.5 rounded ${
           item.value === filterValue
             ? 'border-emerald-500 text-emerald-500'
             : ''

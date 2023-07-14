@@ -13,12 +13,11 @@ const isFetching = ref<boolean>(false);
 const isEnd = ref<boolean>(false);
 
 const comments = ref<Comment[]>([]);
-const totalComments = ref<number>(0);
 
 const route = useRoute();
 const { chapterId, comicId } = route.params;
 
-const { images, chapters, comic_name, chapter_name } = await useAxios(
+const { images, chapters, comic_name, chapter_name } = await useData(
   `/comics/${comicId}/chapters/${chapterId}`
 );
 
@@ -26,7 +25,7 @@ const getComments = async () => {
   try {
     isFetching.value = true;
     commentPage.value += 1;
-    const data = await useAxios(
+    const data = await useData(
       `/comics/${comicId}/comments?chapter=${chapterId}&page=${commentPage.value}`
     );
     comments.value = [...comments.value, ...data.comments];
@@ -54,7 +53,7 @@ const handleShowToolbar = (e: Event) => {
   openEpisode.value = false;
 };
 
-const handleCloseComments = (e: Event) => {
+const onCloseComments = (e: Event) => {
   if (e.target !== e.currentTarget) return;
   openComments.value = false;
 };
@@ -88,19 +87,18 @@ const getElementsPos = () => {
   });
   if (foundEle) {
     currentPage.value = Number(foundEle.getAttribute('id')) - 1;
-  } else {
-    currentPage.value = images.length;
+    return;
   }
+  currentPage.value = elements.length;
 };
+
+const totalComments = await getComments();
 
 onMounted(async () => {
   document.addEventListener('scroll', getElementsPos);
   currentPage.value = 1;
-  const [comments, comic]: [number, ComicDetail] = await Promise.all([
-    getComments(),
-    useAxios(`/comics/${comicId}`),
-  ]);
-  totalComments.value = comments;
+  const comic: ComicDetail = await useData(`/comics/${comicId}`);
+
   const { authors, id, status, title, thumbnail, is_adult } = comic;
   historyAddComic({
     authors,
@@ -149,7 +147,7 @@ useServerSeoMeta(
             ? 'opacity-1 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
         }`"
-        @click="handleCloseComments"
+        @click="onCloseComments"
       >
         <div
           :class="`relative w-full max-w-4xl bg-white rounded-md duration-300 ${
@@ -163,7 +161,7 @@ useServerSeoMeta(
             @click="openComments = false"
           />
           <div class="max-h-[75vh] overflow-auto py-5 p-10 text-sm">
-            <h4 class="text-2xl font-bold text-zinc-600">Comments</h4>
+            <h4 class="text-2xl font-extrabold text-zinc-600">Comments</h4>
             <Comments :comments="comments" />
             <div class="w-max mx-auto pb-2 mt-6" v-if="!isEnd">
               <Icon name="line-md:loading-loop" size="42" v-if="isFetching" />
@@ -185,7 +183,7 @@ useServerSeoMeta(
         </div>
       </div>
       <div
-        :class="`select-none top-0 inset-x-0 bg-[rgba(0,0,0,0.9)] flex items-center justify-center gap-2 py-3 text-gray-300 font-medium duration-200 ${
+        :class="`select-none top-0 inset-x-0 bg-[rgba(0,0,0,0.9)] flex items-center justify-center gap-2 py-3 text-gray-300 font-semibold duration-200 ${
           showToolbar
             ? 'translate-y-0 opacity-1'
             : '-translate-y-full opacity-0'
@@ -198,7 +196,7 @@ useServerSeoMeta(
         <span>{{ chapter_name }}</span>
       </div>
       <div
-        :class="`select-none absolute flex items-center justify-center gap-8 py-2 bottom-0 inset-x-0 bg-[rgba(0,0,0,0.75)] text-gray-400 text-sm font-medium duration-300
+        :class="`select-none absolute flex items-center justify-center gap-8 py-2 bottom-0 inset-x-0 bg-[rgba(0,0,0,0.75)] text-gray-400 text-sm font-semibold duration-300
            ${
              showToolbar
                ? 'translate-y-0 opacity-1'

@@ -18,7 +18,6 @@
     "nuxt-simple-robots": "^3.0.2"
   },
   "dependencies": {
-    "axios": "^1.4.0",
     "nuxt-swiper": "^1.1.1",
     "pdfkit": "^0.13.0",
     "vue-awesome-paginate": "^1.1.46"

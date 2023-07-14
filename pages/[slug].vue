@@ -14,7 +14,7 @@ const isFetching = ref<boolean>(false);
 const getCommics = async (page: number) => {
   try {
     isFetching.value = true;
-    const data = await useAxios(`${routeData?.apiPath}?page=${page}`);
+    const data = await useData(`${routeData?.apiPath}?page=${page}`);
     comics.value = data;
   } catch (err) {
     console.log(err);
@@ -50,7 +50,7 @@ watch(route, async (route) => {
     <ComicsPagination
       :is-fetching="isFetching"
       :comics="comics?.comics"
-      :total-pages="comics?.total_pages || 0"
+      :total-pages="comics?.total_pages"
       :title="routeData?.title"
       :icon="routeData?.icon"
     />

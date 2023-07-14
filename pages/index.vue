@@ -10,12 +10,12 @@ const data = (async () => {
     boyComics,
     girlComics,
   ] = await Promise.all([
-    useAxios('/trending-comics'),
-    useAxios('/completed-comics'),
-    useAxios('/recent-update-comics'),
-    useAxios('/recommend-comics'),
-    useAxios('/boy-comics'),
-    useAxios('/girl-comics'),
+    useData('/trending-comics'),
+    useData('/completed-comics'),
+    useData('/recent-update-comics'),
+    useData('/recommend-comics'),
+    useData('/boy-comics'),
+    useData('/girl-comics'),
   ]);
   return {
     trendingComics,

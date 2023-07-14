@@ -10,7 +10,7 @@ const route = useRoute();
 const getSearchComics = async () => {
   try {
     isFetching.value = true;
-    const data = await useAxios(`/search?q=${query.value}`);
+    const data = await useData(`/search?q=${query.value}`);
     comics.value = data.comics;
   } catch (err) {
     console.log(err);
@@ -36,7 +36,7 @@ watch(route, async (route) => {
     <Meta name="description" content="Free comic and manga reader online" />
   </Head>
   <main class="max-w-6xl mx-auto min-h-screen py-6">
-    <div class="flex items-center gap-1 text-gray-500 font-medium text-lg">
+    <div class="flex items-center gap-1 text-gray-500 font-bold text-lg">
       <NuxtLink to="/">Home</NuxtLink>
       <Icon name="icon-park:right" size="16" />
       <span>Search result</span>
@@ -44,7 +44,7 @@ watch(route, async (route) => {
       <span class="text-black">{{ query }}</span>
     </div>
     <h4
-      class="text-2xl text-center mt-8 font-semibold text-gray-600"
+      class="text-2xl text-center mt-8 font-bold text-gray-600"
       v-show="!isFetching && !comics.length"
     >
       No result
@@ -69,7 +69,7 @@ watch(route, async (route) => {
             :alt="comic.title"
             class="rounded aspect-[2/3] h-36 border border-emerald-500 object-cover"
           />
-          <div class="text-gray-500 font-medium">
+          <div class="text-gray-500 font-bold">
             <h3 class="text-lg text-black leading-5">
               {{ comic.title }}
               <span class="text-sm text-gray-500">
@@ -88,12 +88,14 @@ watch(route, async (route) => {
                 {{ comic.authors }}
               </template>
             </p>
-            <p class="text-sm line-clamp-2">{{ comic.short_description }}</p>
+            <p class="text-sm line-clamp-2 font-semibold">
+              {{ comic.short_description }}
+            </p>
             <ul class="text-sm flex items-center flex-wrap gap-2 mt-1">
               <li
                 v-for="genre in comic.genres"
                 :key="genre.id"
-                class="bg-cyan-100 text-cyan-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+                class="bg-cyan-100 text-cyan-800 text-xs px-2.5 py-0.5 rounded-full"
               >
                 {{ genre.name }}
               </li>

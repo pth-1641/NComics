@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   ssr: true,
   nitro: {
     prerender: {
-      crawlLinks: true,
+      crawlLinks: false,
     },
   },
   modules: [
