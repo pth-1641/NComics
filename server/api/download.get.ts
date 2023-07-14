@@ -1,11 +1,11 @@
-import axios from 'axios';
 import PDFDocument from 'pdfkit';
 
 export default defineEventHandler(async (event) => {
   const { chapterId, comicId } = getQuery(event);
+  const { baseURL } = useRuntimeConfig().public;
 
-  const { data } = await axios.get(`/comics/${comicId}/chapters/${chapterId}`, {
-    baseURL: process.env.BASE_URL,
+  const data: any = await $fetch(`/comics/${comicId}/chapters/${chapterId}`, {
+    baseURL,
   });
   const { images, chapter_name, comic_name } = data;
 
@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) => {
   doc.on('end', () => stream.end());
 
   for (const { src } of images) {
-    const { data } = await axios.get(src, {
-      responseType: 'arraybuffer',
+    const data: any = await $fetch(src, {
+      responseType: 'arrayBuffer',
     });
 
     // @ts-ignore
