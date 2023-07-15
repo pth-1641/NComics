@@ -6,6 +6,9 @@ const currentPage = ref<number>(1);
 const inputRangeVal = ref<number>(1);
 const commentPage = ref<number>(0);
 
+const loadedImages = ref<number[]>([]);
+const firstRender = ref<boolean>(true);
+
 const openEpisode = ref<boolean>(false);
 const showToolbar = ref<boolean>(true);
 const openComments = ref<boolean>(false);
@@ -26,7 +29,9 @@ const getComments = async () => {
     isFetching.value = true;
     commentPage.value += 1;
     const data = await useData(
-      `/comics/${comicId}/comments?chapter=${chapterId}&page=${commentPage.value}`
+      `/comics/${comicId}/comments?chapter=${
+        chapters.length === 1 ? -1 : chapterId
+      }&page=${commentPage.value}`
     );
     comments.value = [...comments.value, ...data.comments];
     if (commentPage.value >= data.total_pages) isEnd.value = true;
@@ -39,6 +44,7 @@ const getComments = async () => {
 };
 
 const handleChangeEpisode = (type: 'prev' | 'next') => {
+  loadedImages.value = [];
   const episodes = [...chapters].reverse();
   const chapterIdx = episodes.findIndex(
     (chapter: any) => chapter.id === Number(chapterId)
@@ -56,6 +62,17 @@ const handleShowToolbar = (e: Event) => {
 const onCloseComments = (e: Event) => {
   if (e.target !== e.currentTarget) return;
   openComments.value = false;
+};
+
+const onOpenEpisodes = () => {
+  openEpisode.value = !openEpisode.value;
+  if (openEpisode.value) {
+    document.getElementById(chapterId as string)?.scrollIntoView();
+  }
+};
+
+const handleLoadImage = (idx: number) => {
+  loadedImages.value.push(idx);
 };
 
 const handleDownload = async () => {
@@ -89,16 +106,23 @@ const getElementsPos = () => {
     currentPage.value = Number(foundEle.getAttribute('id')) - 1;
     return;
   }
+  if (firstRender.value) {
+    currentPage.value = 1;
+    firstRender.value = false;
+    return;
+  }
   currentPage.value = elements.length;
 };
 
 const totalComments = await getComments();
 
 onMounted(async () => {
+  const checkSSR = Array.from(document.querySelectorAll('.image-source')).every(
+    (el: any) => el.complete
+  );
+  checkSSR ? (loadedImages.value.length = images.length) : null;
   document.addEventListener('scroll', getElementsPos);
-  currentPage.value = 1;
   const comic: ComicDetail = await useData(`/comics/${comicId}`);
-
   const { authors, id, status, title, thumbnail, is_adult } = comic;
   historyAddComic({
     authors,
@@ -131,14 +155,26 @@ useServerSeoMeta(
 <template>
   <main class="bg-zinc-900 min-h-screen">
     <div class="flex flex-col max-w-2xl mx-auto">
-      <img
-        v-for="image in images"
-        :src="image.src"
-        :alt="`Page ${image.page}`"
-        loading="lazy"
-        :id="image.page"
-        class="image-source"
-      />
+      <div v-for="image in images" class="relative min-h-56">
+        <div
+          :class="`absolute inset-0 flex flex-col items-center justify-center text-white bg-zinc-900 duration-150 ${
+            loadedImages.length !== images.length ? 'opacity-100' : 'opacity-0'
+          }`"
+        >
+          <span class="text-xl mt-2 font-semibold animate-pulse">
+            Loading...
+          </span>
+        </div>
+        <img
+          :key="image.src"
+          :src="image.src"
+          :alt="`Page ${image.page}`"
+          loading="lazy"
+          :id="image.page"
+          class="image-source w-full"
+          @load="handleLoadImage(image.page)"
+        />
+      </div>
     </div>
     <div class="fixed inset-0" @click="handleShowToolbar">
       <div
@@ -150,8 +186,8 @@ useServerSeoMeta(
         @click="onCloseComments"
       >
         <div
-          :class="`relative w-full max-w-4xl bg-white rounded-md duration-300 ${
-            openComments ? 'scale-1' : 'scale-0'
+          :class="`relative w-[90vw] max-w-4xl bg-white rounded-md duration-300 ${
+            openComments ? 'scale-100' : 'scale-0'
           }`"
         >
           <Icon
@@ -160,10 +196,10 @@ useServerSeoMeta(
             class="cursor-pointer absolute top-3 right-3"
             @click="openComments = false"
           />
-          <div class="max-h-[75vh] overflow-auto py-5 p-10 text-sm">
+          <div class="max-h-[75vh] overflow-auto p-4 sm:p-10 text-sm">
             <h4 class="text-2xl font-extrabold text-zinc-600">Comments</h4>
-            <Comments :comments="comments" />
-            <div class="w-max mx-auto pb-2 mt-6" v-if="!isEnd">
+            <Comments :comments="comments" :is-end="isEnd" />
+            <div class="w-max mx-auto pb-2 mt-6" v-show="!isEnd">
               <Icon name="line-md:loading-loop" size="42" v-if="isFetching" />
               <button
                 v-else
@@ -173,17 +209,11 @@ useServerSeoMeta(
                 Load more
               </button>
             </div>
-            <div
-              v-else
-              class="mt-6 text-center font-bold text-gray-700 select-none"
-            >
-              - END -
-            </div>
           </div>
         </div>
       </div>
       <div
-        :class="`select-none top-0 inset-x-0 bg-[rgba(0,0,0,0.9)] flex items-center justify-center gap-2 py-3 text-gray-300 font-semibold duration-200 ${
+        :class="`select-none top-0 inset-x-0 bg-[rgba(0,0,0,0.9)] text-center py-3 px-2 text-gray-300 font-semibold duration-200 ${
           showToolbar
             ? 'translate-y-0 opacity-1'
             : '-translate-y-full opacity-0'
@@ -192,11 +222,11 @@ useServerSeoMeta(
         <NuxtLink :to="`/comic/${comicId as string}`">{{
           comic_name
         }}</NuxtLink>
-        <Icon name="icon-park-outline:right" size="16" />
+        <Icon name="icon-park-outline:right" size="16" class="mx-2" />
         <span>{{ chapter_name }}</span>
       </div>
       <div
-        :class="`select-none absolute flex items-center justify-center gap-8 py-2 bottom-0 inset-x-0 bg-[rgba(0,0,0,0.75)] text-gray-400 text-sm font-semibold duration-300
+        :class="`select-none absolute flex items-center flex-col-reverse justify-center gap-3 lg:flex-row lg:gap-8 py-2 bottom-0 inset-x-0 bg-[rgba(0,0,0,0.75)] text-gray-400 text-sm font-semibold duration-300
            ${
              showToolbar
                ? 'translate-y-0 opacity-1'
@@ -204,7 +234,7 @@ useServerSeoMeta(
            }
         `"
       >
-        <div class="flex items-center gap-2">
+        <div class="items-center gap-2 hidden lg:flex">
           <span class="w-16" v-text="`${currentPage} / ${images.length}`" />
           <input
             type="range"
@@ -217,25 +247,35 @@ useServerSeoMeta(
         </div>
         <div class="flex items-center gap-3">
           <button
-            class="px-3 py-1 bg-emerald-200 text-emerald-500 rounded-full"
+            :class="`px-3 py-1 rounded-full ${
+              chapterId == chapters.at(-1).id
+                ? 'bg-gray-200 text-gray-500'
+                : 'bg-emerald-200 text-emerald-500 '
+            }`"
             @click="handleChangeEpisode('prev')"
+            :disabled="chapterId == chapters.at(-1).id"
           >
             Previous
           </button>
           <button
-            class="px-3 py-1 bg-emerald-200 text-emerald-500 rounded-full"
+            :class="`px-3 py-1 rounded-full ${
+              chapterId == chapters[0].id
+                ? 'bg-gray-200 text-gray-500'
+                : 'bg-emerald-200 text-emerald-500 '
+            }`"
             @click="handleChangeEpisode('next')"
+            :disabled="chapterId == chapters[0].id"
           >
             Next
           </button>
           <button
             class="px-3 py-1 bg-fuchsia-200 text-fuchsia-500 rounded-full relative"
-            @click="openEpisode = !openEpisode"
+            @click="onOpenEpisodes"
           >
             Episodes
             <div
-              :class="`absolute bg-zinc-900 w-60 py-3 rounded bottom-9 text-white right-1/2 translate-x-1/2 text-left duration-200 origin-bottom ${
-                openEpisode ? 'scale-1' : 'scale-0'
+              :class="`z-10 absolute bg-zinc-900 w-60 py-3 rounded bottom-9 text-white right-full translate-x-1/3 sm:translate-x-1/2 sm:right-1/2 text-left duration-200 origin-bottom ${
+                openEpisode ? 'scale-100' : 'scale-[0.001]'
               }`"
             >
               <h5 class="text-lg px-4 pb-1">
@@ -257,7 +297,7 @@ useServerSeoMeta(
             </div>
           </button>
         </div>
-        <span class="border-b rotate-90 w-4 border-gray-400" />
+        <span class="border-b rotate-90 w-4 border-gray-400 hidden lg:inline" />
         <div class="flex items-center gap-6">
           <button class="flex items-center gap-2" @click="openComments = true">
             <span class="relative">

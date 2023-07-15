@@ -41,7 +41,7 @@ useServerSeoMeta(meta());
 </script>
 
 <template>
-  <main class="max-w-6xl mx-auto py-5">
+  <main class="max-w-6xl mx-auto py-5 px-3">
     <Swiper
       :slides-per-view="6"
       :loop="true"
@@ -51,6 +51,26 @@ useServerSeoMeta(meta());
         disableOnInteraction: false,
       }"
       :modules="[SwiperAutoplay]"
+      :breakpoints="{
+        0: {
+          slidesPerView: 1,
+        },
+        320: {
+          slidesPerView: 2,
+        },
+        576: {
+          slidesPerView: 3,
+        },
+        768: {
+          slidesPerView: 4,
+        },
+        1024: {
+          slidesPerView: 5,
+        },
+        1280: {
+          slidesPerView: 6,
+        },
+      }"
     >
       <SwiperSlide v-for="comic in recommendComics" :key="comic.id">
         <ComicCard :comic="comic" :detail="false" />

@@ -78,7 +78,7 @@ watch(route, (route) => {
   </div>
   <button
     @click="scrollToTop"
-    :class="`fixed p-2 bottom-10 right-10 flex items-center justify-center aspect-square rounded-full shadow bg-gray-50 -rotate-45 duration-200 ${
+    :class="`fixed p-2 bottom-6 right-6 flex items-center justify-center aspect-square rounded-full shadow bg-gray-50 -rotate-45 duration-200 sm:bottom-6 sm:right-6 ${
       showFloatIcon
         ? 'opacity-1 pointer-events-auto'
         : 'opacity-0 pointer-events-none'

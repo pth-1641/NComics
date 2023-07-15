@@ -17,7 +17,7 @@ const { icon, title, isHistory } = props;
 reactive({
   comics: props.comics,
   totalPages: props.totalPages || 0,
-  isFetching: props.isFetching,
+  isFetching: props.isFetching || false,
 });
 
 onMounted(() => {
@@ -38,13 +38,15 @@ const handleChangePage = async (page: number) => {
 
 <template>
   <h2
-    class="flex items-center gap-2 text-3xl font-bold mb-4 mt-12"
+    class="flex items-center gap-2 text-xl title md:text-3xl font-bold mb-4 mt-12"
     v-if="title"
   >
     <Icon :name="icon" size="36" class="text-emerald-500" />
     {{ title }} - Page {{ currentPage }}
   </h2>
-  <div :class="`grid grid-cols-5 gap-5`">
+  <div
+    class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-1.5 md:gap-3 lg:gap-4 responsive-devices"
+  >
     <div
       v-for="(_, idx) in new Array(20)"
       :key="idx"
@@ -83,9 +85,10 @@ const handleChangePage = async (page: number) => {
 <style>
 .pagination-container {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
   margin-top: 50px;
-  column-gap: 10px;
 }
 .paginate-buttons {
   height: 36px;
@@ -106,5 +109,23 @@ const handleChangePage = async (page: number) => {
 }
 .active-page:hover {
   background-color: #059669;
+}
+</style>
+
+<style scoped>
+@media only screen and (min-width: 320px) and (max-width: 576px) {
+  .responsive-devices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media only screen and (min-width: 576px) and (max-width: 768px) {
+  .responsive-devices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
 }
 </style>

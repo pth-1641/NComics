@@ -1,15 +1,21 @@
 <script lang="ts" setup>
-import { routes } from '@/utils/data';
+import { routes, dynamicRoutes } from '@/utils/data';
 
 const searchValue = ref<string>('');
 const suggestComics = ref<any>([]);
-const showSuggest = ref<boolean>(false);
 const searchInput = ref<any>(null);
+
+const showSuggest = ref<boolean>(false);
+const openSidebar = ref<boolean>(false);
 
 const handleSelectComic = (comicId: string) => {
   navigateTo(`/comic/${comicId}`);
   searchInput.value.blur();
 };
+
+watch(openSidebar, (status) => {
+  document.body.style.overflow = status ? 'hidden' : 'auto';
+});
 
 let timeout: any;
 watch(searchValue, (newValue) => {
@@ -32,7 +38,9 @@ onBeforeUnmount(() => clearTimeout(timeout));
 
 <template>
   <header class="shadow bg-white relative z-50">
-    <nav class="max-w-7xl h-14 mx-auto flex items-center justify-between">
+    <nav
+      class="max-w-7xl h-12 md:h-14 mx-auto flex items-center justify-between px-3"
+    >
       <div class="flex items-center gap-2 h-full">
         <NuxtLink to="/" class="flex items-center gap-2 h-full select-none">
           <img
@@ -43,7 +51,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           />
           <h1 class="text-2xl font-bold text-emerald-500 chocopy">NComics</h1>
         </NuxtLink>
-        <ul class="flex items-center gap-2 text-lg ml-6 text-base">
+        <ul class="items-center gap-2 text-lg ml-6 text-base hidden lg:flex">
           <li v-for="route in routes" :key="route.path">
             <NuxtLink
               :to="route.path"
@@ -55,7 +63,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           </li>
         </ul>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="items-center gap-3 hidden md:flex">
         <NuxtLink to="/history">
           <Icon name="ic:outline-history" size="30" class="text-blue-500" />
         </NuxtLink>
@@ -122,6 +130,130 @@ onBeforeUnmount(() => clearTimeout(timeout));
             </li>
           </ul>
         </form>
+      </div>
+      <div>
+        <button @click="openSidebar = true">
+          <Icon name="carbon:menu" size="32" />
+        </button>
+        <div
+          :class="`fixed inset-0 bg-[rgba(0,0,0,0.85)] duration-200 ${
+            openSidebar
+              ? 'opacity-100 pointer-events-auto'
+              : 'opacity-0 pointer-events-none'
+          }`"
+        >
+          <div
+            :class="`absolute right-0 inset-y-0 bg-white p-5 pt-3 w-11/12 duration-200 ${
+              openSidebar ? 'translate-x-0' : 'translate-x-full'
+            }`"
+          >
+            <button
+              class="ml-auto block w-max mb-2"
+              @click="openSidebar = false"
+            >
+              <Icon name="ep:close-bold" size="28" />
+            </button>
+            <form
+              class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 relative mb-3"
+              @submit.prevent="
+                () => {
+                  searchInput.blur();
+                  navigateTo(`/search?q=${searchValue.replace(/\s+/g, '+')}`);
+                }
+              "
+            >
+              <input
+                type="text"
+                class="outline-none text-sm pl-3 rounded-full w-full"
+                placeholder="Search comics/authors"
+                v-model="searchValue"
+                ref="searchInput"
+                @focus="showSuggest = suggestComics.length > 0"
+                @blur="showSuggest = false"
+              />
+              <button type="submit" class="flex items-center px-3">
+                <Icon name="iconamoon:search-bold" />
+              </button>
+              <ul
+                class="absolute top-11 left-1/2 -translate-x-1/2 w-full h-max max-h-80 overflow-auto shadow rounded bg-white"
+                v-show="showSuggest"
+              >
+                <li
+                  v-for="comic in suggestComics"
+                  :key="comic.id"
+                  @mousedown="handleSelectComic(comic.id)"
+                  class="flex gap-2 p-2 border-b hover:bg-gray-200 duration-100 cursor-pointer"
+                >
+                  <img
+                    :src="comic.thumbnail"
+                    :alt="comic.title"
+                    class="border border-emerald-500 w-16 h-24 object-cover object-center rounded"
+                  />
+                  <div>
+                    <h6 class="font-bold text-sm">
+                      {{ comic.title }}
+                      <span class="font-normal">
+                        ({{ comic.lastest_chapter }})
+                      </span>
+                    </h6>
+                    <p
+                      class="text-sm font-bold text-emerald-500 flex items-center gap-1"
+                    >
+                      <template v-if="comic.authors === 'Updating'">
+                        <Icon name="mdi:dots-circle" size="16" />
+                        Updating
+                      </template>
+                      <template v-else>
+                        {{ comic.authors.join(' | ') }}
+                      </template>
+                    </p>
+                    <p class="text-xs font-semibold flex items-center">
+                      <template v-if="Array.isArray(comic.genres)">
+                        {{ comic.genres.join(', ') }}
+                      </template>
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            </form>
+            <ul class="grid gap-3 text-lg font-semibold">
+              <NuxtLink
+                to="/"
+                active-class="text-emerald-500"
+                @click="openSidebar = false"
+              >
+                <Icon name="ion:home-outline" size="20" class="mr-1" />
+                Home
+              </NuxtLink>
+              <NuxtLink
+                to="/genres?type=all"
+                active-class="text-emerald-500"
+                @click="openSidebar = false"
+              >
+                <Icon name="fa-solid:crown" size="20" class="mr-1" />
+                Genres
+              </NuxtLink>
+              <NuxtLink
+                to="/top"
+                active-class="text-emerald-500"
+                @click="openSidebar = false"
+              >
+                <Icon name="twemoji:top-arrow" size="20" class="mr-1" />
+                Top
+              </NuxtLink>
+              <NuxtLink
+                v-for="route in dynamicRoutes"
+                :key="route.path"
+                :to="route.path"
+                active-class="text-emerald-500"
+                @click="openSidebar = false"
+              >
+                <Icon :name="route.icon" size="20" class="mr-1" />
+                {{ route.title }}
+              </NuxtLink>
+            </ul>
+          </div>
+        </div>
       </div>
     </nav>
   </header>

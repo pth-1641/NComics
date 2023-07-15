@@ -19,10 +19,8 @@ const getSearchComics = async () => {
   }
 };
 
-onBeforeMount(async () => {
-  query.value = route.query.q as string;
-  await getSearchComics();
-});
+query.value = route.query.q as string;
+await getSearchComics();
 
 watch(route, async (route) => {
   query.value = route.query.q as string;
@@ -35,8 +33,10 @@ watch(route, async (route) => {
     <Title>{{ `${query ? `${query} | NComics` : 'NComics'}` }}</Title>
     <Meta name="description" content="Free comic and manga reader online" />
   </Head>
-  <main class="max-w-6xl mx-auto min-h-screen py-6">
-    <div class="flex items-center gap-1 text-gray-500 font-bold text-lg">
+  <main class="max-w-6xl mx-auto min-h-screen py-6 px-3">
+    <div
+      class="flex items-center flex-wrap gap-1 text-gray-500 font-bold text-lg"
+    >
       <NuxtLink to="/">Home</NuxtLink>
       <Icon name="icon-park:right" size="16" />
       <span>Search result</span>
@@ -49,7 +49,7 @@ watch(route, async (route) => {
     >
       No result
     </h4>
-    <ul class="grid grid-cols-2 gap-6 py-5">
+    <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 py-5">
       <template v-if="isFetching">
         <li
           v-for="(_, idx) in new Array(8)"
@@ -62,14 +62,14 @@ watch(route, async (route) => {
           :to="`/comic/${comic.id}`"
           v-for="comic in comics"
           :key="comic.id"
-          class="flex gap-4 rounded-lg border border-gray-100 bg-gray-50 p-4"
+          class="flex flex-col sm:flex-row gap-4 rounded-lg border border-gray-100 bg-gray-50 p-4"
         >
           <img
             :src="comic.thumbnail"
             :alt="comic.title"
-            class="rounded aspect-[2/3] h-36 border border-emerald-500 object-cover"
+            class="rounded aspect-[2/3] w-44 mx-auto sm:w-auto sm:h-36 border border-emerald-500 object-cover"
           />
-          <div class="text-gray-500 font-bold">
+          <div class="text-gray-500 font-bold w-full">
             <h3 class="text-lg text-black leading-5">
               {{ comic.title }}
               <span class="text-sm text-gray-500">

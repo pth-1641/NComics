@@ -15,6 +15,7 @@ onBeforeMount(() => initLocalDb());
 <style>
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .swiper-button-prev,
@@ -50,6 +51,14 @@ html {
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: #888;
+}
+
+@media screen and (max-width: 576px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    background-color: transparent;
+  }
 }
 </style>
 

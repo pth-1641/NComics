@@ -2,6 +2,7 @@
 .output
 .nuxt
 .nitro
+.vercel
 .cache
 dist
 

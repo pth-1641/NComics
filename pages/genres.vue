@@ -23,8 +23,9 @@ const getComics = async (genreId: string, page: number) => {
   try {
     isFetching.value = true;
     const data = await useData(`/genres/${genreId}?page=${page}`);
-    comics.value = data.comics;
-    totalPages.value = data.total_pages;
+    comics.value = data?.comics;
+    totalPages.value = data?.total_pages;
+    return data;
   } catch (err) {
     console.log(err);
   } finally {
@@ -36,7 +37,7 @@ const page = route.query.page;
 const p = page && !isNaN(+page) ? Number(route.query.page) : 1;
 const type = route.query.type;
 currentGenre.value = type ? String(type) : 'all';
-const [_, genresData] = await Promise.all([
+const [comicsData, genresData] = await Promise.all([
   getComics(currentGenre.value, p),
   useData('/genres'),
 ]);
@@ -44,8 +45,7 @@ const [_, genresData] = await Promise.all([
 const initSlide = genresData.findIndex(
   (genre: any) => genre.id === route.query.type
 );
-
-if (initSlide === -1) {
+if (initSlide === -1 || !comicsData) {
   throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
 }
 genres.value = genresData;
@@ -74,8 +74,10 @@ watch(route, async (route) => {
         "
     />
   </Head>
-  <main class="max-w-6xl mx-auto">
-    <h2 class="flex items-center gap-2 text-3xl font-bold mb-4 mt-8">
+  <main class="max-w-6xl mx-auto px-3">
+    <h2
+      class="flex items-center gap-2 text-xl sm:text-2xl md:text-3xl font-bold mb-4 mt-4 md:mt-8"
+    >
       <Icon name="fa-solid:crown" size="36" class="text-emerald-500" />
       Genres
     </h2>
@@ -83,7 +85,7 @@ watch(route, async (route) => {
       slides-per-view="auto"
       :loop="false"
       class="border-y"
-      :modules="[SwiperFreeMode]"
+      :modules="[SwiperFreeMode, SwiperNavigation]"
       :free-mode="true"
       :initial-slide="initSlide"
     >

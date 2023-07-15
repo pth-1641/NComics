@@ -19,6 +19,7 @@ const description = ref<any>(null);
 
 const commentPage = ref<number>(1);
 const currentChapterPage = ref<number>(0);
+const isEnd = ref<boolean>(false);
 
 const isFetching = ref<boolean>(false);
 const isTooLongDescription = ref<boolean>(false);
@@ -63,7 +64,7 @@ const getChapter = (start: number, end: number) => {
 chaptersSection.value = getChapter(0, CHAPTER_PER_PAGE);
 chaptersDownloadSection.value = getChapter(0, CHAPTER_PER_PAGE);
 
-const handleChangeChapterGroup = (idx: number) => {
+const onChangeChapterGroup = (idx: number) => {
   currentChapterPage.value = idx;
   chaptersSection.value = getChapter(
     idx === 0 ? 0 : idx * CHAPTER_PER_PAGE + 1,
@@ -71,7 +72,7 @@ const handleChangeChapterGroup = (idx: number) => {
   );
 };
 
-const handleChangeChapterDownloadGroup = (idx: number) => {
+const onChangeChapterDownloadGroup = (idx: number) => {
   currentDownloadChapterPage.value = idx;
   chaptersDownloadSection.value = getChapter(
     idx === 0 ? 0 : idx * CHAPTER_PER_PAGE + 1,
@@ -79,7 +80,7 @@ const handleChangeChapterDownloadGroup = (idx: number) => {
   );
 };
 
-const handleLoadComments = async () => {
+const getComments = async () => {
   try {
     isFetching.value = true;
     commentPage.value += 1;
@@ -87,6 +88,7 @@ const handleLoadComments = async () => {
       `/comics/${comicId}/comments?page=${commentPage.value}`
     );
     comments.value = [...comments.value, ...data.comments];
+    if (commentPage.value >= data.total_pages) isEnd.value = true;
   } catch (err) {
     console.log(err);
   } finally {
@@ -94,7 +96,7 @@ const handleLoadComments = async () => {
   }
 };
 
-const handleAddDownloadChapter = (chapterId: number) => {
+const onAddDownloadChapter = (chapterId: number) => {
   if (downloadChapters.value.includes(chapterId)) {
     const chapterIdx = downloadChapters.value.indexOf(chapterId);
     downloadChapters.value.splice(chapterIdx, 1);
@@ -147,15 +149,15 @@ useServerSeoMeta(
 </script>
 
 <template>
-  <div class="relative pt-12">
+  <div class="relative pt-12 px-4">
     <div
       class="absolute top-0 inset-x-0 h-80 bg-gradient-to-b from-emerald-100 -z-10"
     />
     <div
-      class="max-w-5xl mx-auto border-4 border-white rounded-xl grid grid-cols-4 gap-6 p-4"
+      class="max-w-5xl mx-auto border-4 border-transparent p-0 rounded-xl sm:grid sm:grid-cols-4 gap-6 md:p-4 md:border-white"
     >
       <div
-        class="col-span-1 aspect-[2/3] rounded-lg border-2 overflow-hidden border-emerald-500 relative"
+        class="aspect-[2/3] w-56 mx-auto sm:w-full rounded-lg border-2 overflow-hidden border-emerald-500 relative sm:col-span-1"
       >
         <img
           class="w-full h-full object-cover"
@@ -180,8 +182,8 @@ useServerSeoMeta(
           </span>
         </div>
       </div>
-      <div class="col-span-3">
-        <h4 class="text-3xl font-extrabold">{{ comic.title }}</h4>
+      <div class="sm:col-span-3">
+        <h4 class="text-3xl font-extrabold mt-5">{{ comic.title }}</h4>
         <p class="mb-3 mt-1 text-sm font-semibold text-gray-700">
           {{ comic.other_names.join(' | ') }}
         </p>
@@ -224,7 +226,9 @@ useServerSeoMeta(
             </NuxtLink>
           </template>
         </div>
-        <div class="flex items-center font-bold text-gray-800 gap-4">
+        <div
+          class="flex items-center flex-wrap font-bold text-gray-800 gap-x-4 gap-y-1"
+        >
           <span class="flex items-center gap-1">
             <Icon name="carbon:view-filled" size="20" class="text-sky-500" />
             <template v-if="comic.total_views === 'Updating'">
@@ -268,7 +272,9 @@ useServerSeoMeta(
             {{ showFullDescription ? 'Show less' : 'Show more' }}
           </button>
         </div>
-        <div class="flex items-center gap-3 mt-5 font-bold">
+        <div
+          class="flex flex-col sm:flex-row items-center gap-3 mt-5 font-bold"
+        >
           <NuxtLink
             :to="`/comic/${comic.id}/${comic.chapters.at(-1)?.id}`"
             class="flex items-center gap-1 border-2 border-emerald-500 rounded bg-emerald-500 text-white text-lg px-6 py-2"
@@ -286,8 +292,10 @@ useServerSeoMeta(
         </div>
       </div>
     </div>
-    <div class="max-w-5xl mx-auto">
-      <div class="flex items-center gap-6 font-bold text-xl border-b-2 py-1">
+    <div class="max-w-5xl mx-auto mt-5">
+      <div
+        class="flex items-center gap-6 font-bold text-lg sm:text-xl border-b-2 py-1"
+      >
         <button
           :class="`flex items-center gap-1 ${
             currentTab === 'chapters' ? 'text-emerald-500' : ''
@@ -318,7 +326,7 @@ useServerSeoMeta(
                 ? 'bg-emerald-100 text-emerald-500'
                 : 'bg-gray-100'
             }`"
-            @click="handleChangeChapterGroup(idx)"
+            @click="onChangeChapterGroup(idx)"
           >
             <template v-if="idx + 1 < totalChapterPage">
               {{
@@ -336,7 +344,7 @@ useServerSeoMeta(
             </template>
           </button>
         </div>
-        <ul class="grid grid-cols-4 gap-4">
+        <ul class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <NuxtLink
             v-for="chapter in chaptersSection"
             class="border rounded px-3 py-2 truncate hover:bg-emerald-50 duration-100"
@@ -349,13 +357,13 @@ useServerSeoMeta(
         </ul>
       </div>
       <div v-show="currentTab === 'comments'">
-        <Comments :comments="comments" />
-        <div class="w-max mx-auto mt-4">
+        <Comments :comments="comments" :is-end="isEnd" />
+        <div class="w-max mx-auto mt-4" v-show="!isEnd">
           <Icon name="line-md:loading-loop" size="42" v-if="isFetching" />
           <button
             v-else
             class="bg-emerald-100 text-emerald-500 font-medium rounded-full px-4 py-1.5"
-            @click="handleLoadComments"
+            @click="getComments"
           >
             Load more
           </button>
@@ -376,8 +384,8 @@ useServerSeoMeta(
       alt="Download"
       draggable="false"
     />
-    <div class="bg-white rounded-lg py-4 px-6 w-full max-w-3xl">
-      <div class="flex items-center gap-5">
+    <div class="bg-white rounded-lg py-4 px-6 w-[90vw] max-w-3xl">
+      <div class="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-5">
         <h3 class="text-2xl font-semibold">Select chapters</h3>
         <div
           class="border rounded px-3 py-1 relative cursor-pointer"
@@ -396,7 +404,7 @@ useServerSeoMeta(
                   ? 'text-emerald-500 font-medium'
                   : ''
               }`"
-              @click="handleChangeChapterDownloadGroup(idx)"
+              @click="onChangeChapterDownloadGroup(idx)"
             >
               <template v-if="idx + 1 < totalChapterPage">
                 {{
@@ -417,7 +425,7 @@ useServerSeoMeta(
         </div>
       </div>
       <ul
-        class="grid grid-cols-5 gap-3 max-h-[45vh] overflow-auto my-3 py-1 pr-1 select-none"
+        class="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[45vh] overflow-auto my-3 py-1 pr-1 select-none"
       >
         <li
           v-for="chapter in chaptersDownloadSection"
@@ -427,7 +435,7 @@ useServerSeoMeta(
               ? 'border-emerald-500 bg-emerald-500 text-white'
               : ''
           }`"
-          @click="handleAddDownloadChapter(chapter.id)"
+          @click="onAddDownloadChapter(chapter.id)"
         >
           {{ chapter.name }}
         </li>
@@ -446,3 +454,21 @@ useServerSeoMeta(
     </div>
   </div>
 </template>
+
+<style scoped>
+@media only screen and (min-width: 320px) and (max-width: 576px) {
+  .responsive-devices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media only screen and (min-width: 576px) and (max-width: 768px) {
+  .responsive-devices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+</style>

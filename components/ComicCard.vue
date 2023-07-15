@@ -19,6 +19,8 @@ const {
   is_trending,
   updated_at,
 } = comic;
+
+const isImageLoaded = ref<boolean>(false);
 </script>
 
 <template>
@@ -51,12 +53,22 @@ const {
         Up
       </span>
     </div>
-    <img
-      :src="thumbnail"
-      :alt="title"
-      class="w-full aspect-[2/3] object-cover object-center scale-[1.01] group-hover:scale-105 duration-300 origin-bottom select-none"
-      loading="lazy"
-    />
+    <div class="relative">
+      <div
+        :class="`absolute inset-0 flex items-center justify-center text-white bg-gray-200 duration-150 ${
+          isImageLoaded ? 'opacity-0' : 'opacity-100'
+        }`"
+      >
+        <Icon name="line-md:loading-loop" size="48" />
+      </div>
+      <img
+        :src="thumbnail"
+        :alt="title"
+        class="w-full aspect-[2/3] object-cover object-center scale-[1.01] group-hover:scale-105 duration-300 origin-bottom select-none"
+        loading="lazy"
+        @load="isImageLoaded = true"
+      />
+    </div>
     <div
       class="absolute top-1/2 bottom-0 inset-x-0 flex flex-col justify-end px-4 py-2 bg-gradient-to-b from-transparent to-black"
     >
@@ -84,8 +96,8 @@ const {
             </template>
             <template v-else>{{ authors }} </template>
           </p>
-          <div
-            class="flex items-center justify-between text-emerald-400 text-xs py-1 mt-0.5"
+          <!-- <div
+            class="flex items-center justify-center gap-x-2 gap-y-1 flex-wrap text-emerald-400 text-xs py-1 mt-0.5"
             v-if="!isHistory"
           >
             <span class="flex items-center gap-1 bg-white/25 px-1 rounded">
@@ -100,7 +112,7 @@ const {
               <Icon name="mingcute:comment-fill" />
               {{ total_comments }}
             </span>
-          </div>
+          </div> -->
         </div>
       </template>
       <span v-else class="py-1" />

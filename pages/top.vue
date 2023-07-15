@@ -29,10 +29,13 @@ const getComics = async (tab: string, page: number = 1) => {
 };
 
 const currentQuery = route.query.tab as string;
-currentTab.value = currentQuery || 'all';
+currentTab.value =
+  topRoutes.findIndex((r) => r.type === currentQuery) > -1
+    ? currentQuery
+    : 'all';
 const page = route.query.page;
 const p = page && !isNaN(+page) ? Number(route.query.page) : 1;
-await getComics(currentQuery, p);
+await getComics(currentTab.value, p);
 
 const handleChangeTab = (tab: string) => {
   currentTab.value = tab;
@@ -72,8 +75,8 @@ watch([currentTab, route], async ([newTab, route]) => {
     }}</Title>
     <Meta name="description" content="Free comic and manga reader online" />
   </Head>
-  <main class="max-w-6xl mx-auto">
-    <ul class="flex flex-wrap items-center gap-3 mt-5">
+  <main class="max-w-6xl mx-auto px-3">
+    <ul class="flex flex-wrap items-center gap-1.5 mt-5 sm:gap-3">
       <li
         v-for="route in topRoutes"
         :key="route.type"
@@ -86,7 +89,9 @@ watch([currentTab, route], async ([newTab, route]) => {
         {{ route.name }}
       </li>
     </ul>
-    <ul class="flex items-center gap-5 mb-5 mt-3 font-semibold">
+    <ul
+      class="flex items-center flex-wrap gap-2.5 mb-5 mt-3 font-semibold sm:gap-5"
+    >
       <li
         v-for="item in filterValues"
         :class="`min-w-[60px] cursor-pointer text-center border px-3 py-1.5 rounded ${

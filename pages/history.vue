@@ -37,7 +37,7 @@ watch(route, (route) => {
 </script>
 
 <template>
-  <main class="max-w-6xl mx-auto">
+  <main class="max-w-6xl mx-auto px-3">
     <ComicsPagination
       :is-fetching="isFetching"
       :comics="
