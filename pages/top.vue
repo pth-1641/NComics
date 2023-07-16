@@ -21,6 +21,7 @@ const getComics = async (tab: string, page: number = 1) => {
     );
     comics.value = data.comics;
     totalPages.value = data.total_pages;
+    return data;
   } catch (err) {
     console.log(err);
   } finally {
@@ -35,7 +36,15 @@ currentTab.value =
     : 'all';
 const page = route.query.page;
 const p = page && !isNaN(+page) ? Number(route.query.page) : 1;
-await getComics(currentTab.value, p);
+const currentFilter = route.query.filter as string;
+filterValue.value =
+  filterValues.findIndex((r) => r.value === currentFilter) > -1
+    ? currentFilter
+    : 'all';
+const data = await getComics(currentTab.value, p);
+if (!data) {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
+}
 
 const handleChangeTab = (tab: string) => {
   currentTab.value = tab;

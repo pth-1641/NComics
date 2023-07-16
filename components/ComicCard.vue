@@ -70,7 +70,7 @@ const isImageLoaded = ref<boolean>(false);
       />
     </div>
     <div
-      class="absolute top-1/2 bottom-0 inset-x-0 flex flex-col justify-end px-4 py-2 bg-gradient-to-b from-transparent to-black"
+      class="absolute top-1/2 bottom-0 inset-x-0 flex flex-col justify-end px-2 sm:px-4 py-2 bg-gradient-to-b from-transparent to-black"
     >
       <h5
         class="font-bold leading-5 text-lg text-white group-hover:text-emerald-400 text-shadow duration-200 line-clamp-2"
@@ -96,8 +96,8 @@ const isImageLoaded = ref<boolean>(false);
             </template>
             <template v-else>{{ authors }} </template>
           </p>
-          <!-- <div
-            class="flex items-center justify-center gap-x-2 gap-y-1 flex-wrap text-emerald-400 text-xs py-1 mt-0.5"
+          <div
+            class="hidden md:flex items-center gap-0.5 justify-center gap-x-2 gap-y-1 text-emerald-400 text-xs py-1 mt-0.5"
             v-if="!isHistory"
           >
             <span class="flex items-center gap-1 bg-white/25 px-1 rounded">
@@ -112,7 +112,7 @@ const isImageLoaded = ref<boolean>(false);
               <Icon name="mingcute:comment-fill" />
               {{ total_comments }}
             </span>
-          </div> -->
+          </div>
         </div>
       </template>
       <span v-else class="py-1" />

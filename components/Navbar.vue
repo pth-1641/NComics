@@ -13,6 +13,13 @@ const handleSelectComic = (comicId: string) => {
   searchInput.value.blur();
 };
 
+const handleSearchComics = () => {
+  if (!searchValue.value.trim()) return;
+  openSidebar.value = false;
+  searchInput.value.blur();
+  navigateTo(`/search?q=${searchValue.value.replace(/\s+/g, '+')}`);
+};
+
 watch(openSidebar, (status) => {
   document.body.style.overflow = status ? 'hidden' : 'auto';
 });
@@ -63,18 +70,13 @@ onBeforeUnmount(() => clearTimeout(timeout));
           </li>
         </ul>
       </div>
-      <div class="items-center gap-3 hidden md:flex">
+      <div class="items-center gap-3 hidden lg:flex">
         <NuxtLink to="/history">
           <Icon name="ic:outline-history" size="30" class="text-blue-500" />
         </NuxtLink>
         <form
           class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 mx-4 relative"
-          @submit.prevent="
-            () => {
-              searchInput.blur();
-              navigateTo(`/search?q=${searchValue.replace(/\s+/g, '+')}`);
-            }
-          "
+          @submit.prevent="handleSearchComics"
         >
           <input
             type="text"
@@ -131,7 +133,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           </ul>
         </form>
       </div>
-      <div>
+      <div class="lg:hidden">
         <button @click="openSidebar = true">
           <Icon name="carbon:menu" size="32" />
         </button>
@@ -141,9 +143,15 @@ onBeforeUnmount(() => clearTimeout(timeout));
               ? 'opacity-100 pointer-events-auto'
               : 'opacity-0 pointer-events-none'
           }`"
+          @click="
+            (e) => {
+              if (e.currentTarget !== e.target) return;
+              openSidebar = false;
+            }
+          "
         >
           <div
-            :class="`absolute right-0 inset-y-0 bg-white p-5 pt-3 w-11/12 duration-200 ${
+            :class="`absolute right-0 inset-y-0 bg-white p-5 pt-3 w-11/12 max-w-sm duration-200 ${
               openSidebar ? 'translate-x-0' : 'translate-x-full'
             }`"
           >
@@ -155,12 +163,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
             </button>
             <form
               class="flex items-center rounded-full border py-2 focus-within:border-emerald-500 duration-100 relative mb-3"
-              @submit.prevent="
-                () => {
-                  searchInput.blur();
-                  navigateTo(`/search?q=${searchValue.replace(/\s+/g, '+')}`);
-                }
-              "
+              @submit.prevent="handleSearchComics"
             >
               <input
                 type="text"
@@ -250,6 +253,14 @@ onBeforeUnmount(() => clearTimeout(timeout));
               >
                 <Icon :name="route.icon" size="20" class="mr-1" />
                 {{ route.title }}
+              </NuxtLink>
+              <NuxtLink
+                to="/history"
+                active-class="text-emerald-500"
+                @click="openSidebar = false"
+              >
+                <Icon name="mdi:clock-outline" size="20" class="mr-1" />
+                History
               </NuxtLink>
             </ul>
           </div>

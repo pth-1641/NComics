@@ -67,7 +67,7 @@ export const dynamicRoutes: DynamicRoute[] = [
     path: '/recent',
     apiPath: '/recent-update-comics',
     title: 'Recently Comics',
-    icon: 'mdi:clock-outline',
+    icon: 'radix-icons:update',
   },
   {
     path: '/boy',

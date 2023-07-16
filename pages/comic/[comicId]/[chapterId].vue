@@ -6,7 +6,6 @@ const currentPage = ref<number>(1);
 const inputRangeVal = ref<number>(1);
 const commentPage = ref<number>(0);
 
-const loadedImages = ref<number[]>([]);
 const firstRender = ref<boolean>(true);
 
 const openEpisode = ref<boolean>(false);
@@ -14,6 +13,7 @@ const showToolbar = ref<boolean>(true);
 const openComments = ref<boolean>(false);
 const isFetching = ref<boolean>(false);
 const isEnd = ref<boolean>(false);
+const isChangingEpisode = ref<boolean>(false);
 
 const comments = ref<Comment[]>([]);
 
@@ -44,7 +44,7 @@ const getComments = async () => {
 };
 
 const handleChangeEpisode = (type: 'prev' | 'next') => {
-  loadedImages.value = [];
+  isChangingEpisode.value = true;
   const episodes = [...chapters].reverse();
   const chapterIdx = episodes.findIndex(
     (chapter: any) => chapter.id === Number(chapterId)
@@ -69,10 +69,6 @@ const onOpenEpisodes = () => {
   if (openEpisode.value) {
     document.getElementById(chapterId as string)?.scrollIntoView();
   }
-};
-
-const handleLoadImage = (idx: number) => {
-  loadedImages.value.push(idx);
 };
 
 const handleDownload = async () => {
@@ -117,10 +113,6 @@ const getElementsPos = () => {
 const totalComments = await getComments();
 
 onMounted(async () => {
-  const checkSSR = Array.from(document.querySelectorAll('.image-source')).every(
-    (el: any) => el.complete
-  );
-  checkSSR ? (loadedImages.value.length = images.length) : null;
   document.addEventListener('scroll', getElementsPos);
   const comic: ComicDetail = await useData(`/comics/${comicId}`);
   const { authors, id, status, title, thumbnail, is_adult } = comic;
@@ -155,26 +147,23 @@ useServerSeoMeta(
 <template>
   <main class="bg-zinc-900 min-h-screen">
     <div class="flex flex-col max-w-2xl mx-auto">
-      <div v-for="image in images" class="relative min-h-56">
-        <div
-          :class="`absolute inset-0 flex flex-col items-center justify-center text-white bg-zinc-900 duration-150 ${
-            loadedImages.length !== images.length ? 'opacity-100' : 'opacity-0'
-          }`"
-        >
-          <span class="text-xl mt-2 font-semibold animate-pulse">
-            Loading...
-          </span>
-        </div>
-        <img
-          :key="image.src"
-          :src="image.src"
-          :alt="`Page ${image.page}`"
-          loading="lazy"
-          :id="image.page"
-          class="image-source w-full"
-          @load="handleLoadImage(image.page)"
-        />
-      </div>
+      <span
+        v-if="isChangingEpisode"
+        v-for="(_, idx) in new Array(20)"
+        :key="idx"
+        class="aspect-[2/3] bg-zinc-700 animate-pulse"
+      >
+      </span>
+      <img
+        v-else
+        v-for="image in images"
+        :key="image.src"
+        :src="image.src"
+        :alt="`Page ${image.page}`"
+        loading="lazy"
+        :id="image.page"
+        class="image-source w-full"
+      />
     </div>
     <div class="fixed inset-0" @click="handleShowToolbar">
       <div
@@ -286,6 +275,7 @@ useServerSeoMeta(
                   v-for="chapter in chapters"
                   :to="`/comic/${comicId}/${chapter.id}`"
                   :key="chapter.id"
+                  @click="isChangingEpisode = true"
                   :class="`py-2 block truncate px-5 duration-100 hover:bg-zinc-950 ${
                     chapter.id == chapterId ? 'text-emerald-500 font-bold' : ''
                   }`"
