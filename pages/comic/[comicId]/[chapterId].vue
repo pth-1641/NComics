@@ -24,6 +24,10 @@ const { images, chapters, comic_name, chapter_name } = await useFetchData(
   `/comics/${comicId}/chapters/${chapterId}`
 );
 
+if (images.length === 0 && comic_name === 'Thể loại') {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
+}
+
 const getComments = async () => {
   try {
     isFetching.value = true;

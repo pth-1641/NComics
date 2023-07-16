@@ -33,14 +33,22 @@ const downloadChapters = ref<number[]>([]);
 
 const data = (async () => {
   const [comic, commentsData]: [ComicDetail, ComicComments] = await Promise.all(
-    [useFetchData(`/comics/${comicId}`), useFetchData(`/comics/${comicId}/comments`)]
+    [
+      useFetchData(`/comics/${comicId}`),
+      useFetchData(`/comics/${comicId}/comments`),
+    ]
   );
-  comments.value = commentsData.comments;
+  isEnd.value = commentsData?.total_pages === commentsData?.current_page;
+  comments.value = commentsData?.comments;
   return {
     comic,
     commentsData,
   };
 })();
+
+if (!(await data).comic) {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
+}
 
 const { comic } = await data;
 const newestChapter = comic.chapters[0]?.name.match(/\d+(\.\d+)?/)?.[0];

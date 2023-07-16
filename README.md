@@ -1,63 +1,35 @@
-# Nuxt 3 Minimal Starter
+# NComics
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Free comics website using Nuxt + Tailwind
 
-## Setup
+## Official Link
 
-Make sure to install the dependencies:
+https://ncomics.vercel.app
 
-```bash
-# npm
-npm install
+## Technology
 
-# pnpm
-pnpm install
+- Nuxt 3
+- TailwindCSS
+- Swiper
+- Other libraries
 
-# yarn
-yarn install
-```
+## Features
 
-## Development Server
+- Fully responsive
+- Save/delete read history
+- Download chapters as PDF for offline reading
 
-Start the development server on `http://localhost:3000`:
+## Screenshots
 
-```bash
-# npm
-npm run dev
+![Home](/assets/img/demo/home.png)
+![Genres](/assets/img/demo/genres.png)
+![New](/assets/img/demo/new.png)
+![Top](/assets/img/demo/top.png)
+![Detail](/assets/img/demo/detail.png)
+![Chapter](/assets/img/demo/chapter.png)
+![Search](/assets/img/demo/search.png)
+![History](/assets/img/demo/history.png)
 
-# pnpm
-pnpm run dev
+# Summary
 
-# yarn
-yarn dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+If you like this project, give it a 🌟 and share it to your friends 💖

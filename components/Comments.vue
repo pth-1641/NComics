@@ -91,10 +91,16 @@ reactive({
       </div>
     </div>
     <div
-      v-if="isEnd"
+      v-if="isEnd && comments?.length"
       class="mt-6 text-center font-bold text-gray-700 select-none"
     >
       - END -
+    </div>
+    <div
+      v-if="!comments?.length"
+      class="mt-6 text-center text-2xl font-bold text-gray-700 select-none"
+    >
+      No comments
     </div>
   </div>
 </template>
