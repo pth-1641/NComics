@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { routes, dynamicRoutes } from '@/utils/data';
 
+const device = ref<'mobile' | 'laptop'>('laptop');
+
 const searchValue = ref<string>('');
 const suggestComics = ref<any>([]);
 const searchInput = ref<any>(null);
@@ -32,7 +34,7 @@ watch(searchValue, (newValue) => {
   }
   if (timeout) clearTimeout(timeout);
   timeout = setTimeout(async () => {
-    const result = await useData(
+    const result = await useFetchData(
       `/search-suggest?q=${newValue.replace(/\s+/g, '+')}`
     );
     suggestComics.value = result;
@@ -40,7 +42,20 @@ watch(searchValue, (newValue) => {
     showSuggest.value = result.length;
   }, 200);
 });
-onBeforeUnmount(() => clearTimeout(timeout));
+
+const getScreenWidth = () => {
+  const { width } = window.screen;
+  device.value = width >= 1024 ? 'laptop' : 'mobile';
+};
+
+onMounted(() => {
+  getScreenWidth();
+  window.addEventListener('resize', getScreenWidth);
+});
+onBeforeUnmount(() => {
+  clearTimeout(timeout);
+  window.removeEventListener('resize', getScreenWidth);
+});
 </script>
 
 <template>
@@ -70,7 +85,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           </li>
         </ul>
       </div>
-      <div class="items-center gap-3 hidden lg:flex">
+      <div v-if="device === 'laptop'" class="items-center gap-3 flex">
         <NuxtLink to="/history">
           <Icon name="ic:outline-history" size="30" class="text-blue-500" />
         </NuxtLink>
@@ -91,7 +106,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
             <Icon name="iconamoon:search-bold" />
           </button>
           <ul
-            class="absolute top-11 left-1/2 -translate-x-1/2 w-72 h-max max-h-80 overflow-auto shadow rounded bg-white"
+            class="z-10 absolute top-11 left-1/2 -translate-x-1/2 w-72 h-max max-h-80 overflow-auto shadow rounded bg-white"
             v-show="showSuggest"
           >
             <li
@@ -133,7 +148,7 @@ onBeforeUnmount(() => clearTimeout(timeout));
           </ul>
         </form>
       </div>
-      <div class="lg:hidden">
+      <div v-else>
         <button @click="openSidebar = true">
           <Icon name="carbon:menu" size="32" />
         </button>

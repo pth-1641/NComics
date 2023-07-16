@@ -37,8 +37,13 @@ watch(route, (route) => {
 </script>
 
 <template>
-  <main class="max-w-6xl mx-auto px-3">
+  <Head>
+    <Title>{{ `History - Page ${route.query.page ?? 1} | NComics` }}</Title>
+    <Meta name="description" content="Free comic and manga reader online" />
+  </Head>
+  <main class="max-w-6xl mx-auto px-3 min-h-screen">
     <ComicsPagination
+      v-if="comics.length"
       :is-fetching="isFetching"
       :comics="
         comics.slice(
@@ -50,6 +55,10 @@ watch(route, (route) => {
       title="Recently Read"
       icon="mdi:clock-outline"
       :is-history="true"
+      @delete-comic="getHistoryComics"
     />
+    <h3 v-else class="text-2xl mt-8 font-bold text-gray-600 text-center">
+      No History
+    </h3>
   </main>
 </template>

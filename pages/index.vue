@@ -10,12 +10,12 @@ const data = (async () => {
     boyComics,
     girlComics,
   ] = await Promise.all([
-    useData('/trending-comics'),
-    useData('/completed-comics'),
-    useData('/recent-update-comics'),
-    useData('/recommend-comics'),
-    useData('/boy-comics'),
-    useData('/girl-comics'),
+    useFetchData('/trending-comics'),
+    useFetchData('/completed-comics'),
+    useFetchData('/recent-update-comics'),
+    useFetchData('/recommend-comics'),
+    useFetchData('/boy-comics'),
+    useFetchData('/girl-comics'),
   ]);
   return {
     trendingComics,

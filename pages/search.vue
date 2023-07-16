@@ -10,7 +10,7 @@ const route = useRoute();
 const getSearchComics = async () => {
   try {
     isFetching.value = true;
-    const data = await useData(`/search?q=${query.value}`);
+    const data = await useFetchData(`/search?q=${query.value}`);
     comics.value = data.comics;
   } catch (err) {
     console.log(err);

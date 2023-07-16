@@ -14,7 +14,7 @@ const router = useRouter();
 const getComics = async (tab: string, page: number = 1) => {
   try {
     isFetching.value = true;
-    const data = await useData(
+    const data = await useFetchData(
       `/top/${tab === 'all' ? '' : tab}?page=${page}&status=${
         filterValue.value
       }`
@@ -72,6 +72,7 @@ watch([currentTab, route], async ([newTab, route]) => {
   const page = route.query.page || 1;
   await getComics(newTab, Number(page));
 });
+
 </script>
 
 <template>

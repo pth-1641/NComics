@@ -14,7 +14,7 @@ const isFetching = ref<boolean>(false);
 const getCommics = async (page: number) => {
   try {
     isFetching.value = true;
-    const data = await useData(`${routeData?.apiPath}?page=${page}`);
+    const data = await useFetchData(`${routeData?.apiPath}?page=${page}`);
     comics.value = data;
     return data;
   } catch (err) {

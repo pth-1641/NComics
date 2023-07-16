@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import { Comic } from 'types';
+
 type ComicsPaginationProps = {
-  comics: any;
+  comics: Comic[];
   totalPages: number;
   isFetching: boolean;
   title?: string;
@@ -12,6 +14,7 @@ const currentPage = ref<number>(1);
 const route = useRoute();
 const router = useRouter();
 
+const emit = defineEmits(['delete-comic']);
 const props = defineProps<ComicsPaginationProps>();
 const { icon, title, isHistory } = props;
 reactive({
@@ -54,7 +57,12 @@ const handleChangePage = async (page: number) => {
       class="aspect-[2/3] rounded bg-gray-100 animation-pulse"
     />
     <div v-for="comic in comics" :key="comic.id" v-else>
-      <ComicCard :is-history="isHistory" :comic="comic" :detail="true" />
+      <ComicCard
+        :is-history="isHistory"
+        :comic="comic"
+        :detail="true"
+        @delete-comic="(id:string) => emit('delete-comic',id)"
+      />
     </div>
   </div>
   <vue-awesome-paginate

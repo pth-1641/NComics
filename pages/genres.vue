@@ -22,7 +22,7 @@ const handleChangeGenre = async (genreId: string) => {
 const getComics = async (genreId: string, page: number) => {
   try {
     isFetching.value = true;
-    const data = await useData(`/genres/${genreId}?page=${page}`);
+    const data = await useFetchData(`/genres/${genreId}?page=${page}`);
     comics.value = data?.comics;
     totalPages.value = data?.total_pages;
     return data;
@@ -39,7 +39,7 @@ const type = route.query.type;
 currentGenre.value = type ? String(type) : 'all';
 const [comicsData, genresData] = await Promise.all([
   getComics(currentGenre.value, p),
-  useData('/genres'),
+  useFetchData('/genres'),
 ]);
 
 const initSlide = genresData.findIndex(

@@ -20,7 +20,7 @@ const comments = ref<Comment[]>([]);
 const route = useRoute();
 const { chapterId, comicId } = route.params;
 
-const { images, chapters, comic_name, chapter_name } = await useData(
+const { images, chapters, comic_name, chapter_name } = await useFetchData(
   `/comics/${comicId}/chapters/${chapterId}`
 );
 
@@ -28,7 +28,7 @@ const getComments = async () => {
   try {
     isFetching.value = true;
     commentPage.value += 1;
-    const data = await useData(
+    const data = await useFetchData(
       `/comics/${comicId}/comments?chapter=${
         chapters.length === 1 ? -1 : chapterId
       }&page=${commentPage.value}`
@@ -114,7 +114,7 @@ const totalComments = await getComments();
 
 onMounted(async () => {
   document.addEventListener('scroll', getElementsPos);
-  const comic: ComicDetail = await useData(`/comics/${comicId}`);
+  const comic: ComicDetail = await useFetchData(`/comics/${comicId}`);
   const { authors, id, status, title, thumbnail, is_adult } = comic;
   historyAddComic({
     authors,
@@ -124,6 +124,8 @@ onMounted(async () => {
     title,
     thumbnail,
     reading_at: new Date().getTime(),
+    last_reading: chapter_name,
+    chapter_id: Number(chapterId),
   });
 });
 onBeforeUnmount(() => document.removeEventListener('scroll', getElementsPos));

@@ -33,7 +33,7 @@ const downloadChapters = ref<number[]>([]);
 
 const data = (async () => {
   const [comic, commentsData]: [ComicDetail, ComicComments] = await Promise.all(
-    [useData(`/comics/${comicId}`), useData(`/comics/${comicId}/comments`)]
+    [useFetchData(`/comics/${comicId}`), useFetchData(`/comics/${comicId}/comments`)]
   );
   comments.value = commentsData.comments;
   return {
@@ -84,7 +84,7 @@ const getComments = async () => {
   try {
     isFetching.value = true;
     commentPage.value += 1;
-    const data = await useData(
+    const data = await useFetchData(
       `/comics/${comicId}/comments?page=${commentPage.value}`
     );
     comments.value = [...comments.value, ...data.comments];

@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { Comic } from 'types';
+import { historyDeleteComic } from '@/utils/localDb';
 
 const props = defineProps<{
-  comic: Comic;
+  comic: Comic & { last_reading?: string; chapter_id?: number };
   detail?: boolean;
   isHistory?: boolean;
 }>();
@@ -18,15 +19,32 @@ const {
   total_views,
   is_trending,
   updated_at,
+  chapter_id,
+  last_reading,
 } = comic;
 
 const isImageLoaded = ref<boolean>(false);
+const emit = defineEmits(['delete-comic']);
+
+const handleClickCard = (e: Event, type: 'detail' | 'delete' | 'continue') => {
+  e.stopPropagation();
+  if (type === 'delete') {
+    historyDeleteComic(id);
+    emit('delete-comic', id);
+    return;
+  }
+  if (type === 'continue') {
+    navigateTo(`/comic/${id}/${chapter_id}`);
+    return;
+  }
+  navigateTo(`/comic/${id}`);
+};
 </script>
 
 <template>
   <div
     class="overflow-hidden rounded-md duration-500 border-2 border-transparent hover:border-emerald-300 relative group group-hover:shadow-md cursor-pointer"
-    @click="navigateTo(`/comic/${id}`)"
+    @click="(e) => handleClickCard(e, 'detail')"
   >
     <div
       class="flex gap-1 absolute font-semibold top-0 inset-x-0 z-10 text-xs text-white"
@@ -112,6 +130,29 @@ const isImageLoaded = ref<boolean>(false);
               <Icon name="mingcute:comment-fill" />
               {{ total_comments }}
             </span>
+          </div>
+          <div v-else class="text-gray-300">
+            <p
+              class="text-sm font-semibold flex items-center gap-0.5 mb-1 text-fuchsia-400"
+            >
+              <Icon name="ph:read-cv-logo-fill" size="18" />
+              {{ last_reading }}
+            </p>
+            <div class="flex items-center gap-1 text-sm">
+              <button
+                class="bg-sky-500 w-full px-2 py-1 rounded-sm flex justify-center items-center gap-1"
+                @click="(e) => handleClickCard(e, 'continue')"
+              >
+                <Icon name="system-uicons:book-text" size="20" />
+                Continue
+              </button>
+              <button
+                class="bg-rose-500 px-2 py-1 rounded-sm"
+                @click="(e) => handleClickCard(e, 'delete')"
+              >
+                <Icon name="ion:trash" size="20" />
+              </button>
+            </div>
           </div>
         </div>
       </template>

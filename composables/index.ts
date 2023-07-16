@@ -1,3 +1,3 @@
-import { useData } from './useData';
+import { useFetchData } from './useFetchData';
 
-export { useData };
+export { useFetchData };
