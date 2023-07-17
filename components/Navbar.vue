@@ -44,7 +44,7 @@ watch(searchValue, (newValue) => {
 });
 
 const getScreenWidth = () => {
-  const { width } = window.screen;
+  const width = window.innerWidth;
   device.value = width >= 1024 ? 'laptop' : 'mobile';
 };
 
