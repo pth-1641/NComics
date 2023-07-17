@@ -138,7 +138,7 @@ const handleClickCard = (e: Event, type: 'detail' | 'delete' | 'continue') => {
               <Icon name="ph:read-cv-logo-fill" size="18" />
               {{ last_reading }}
             </p>
-            <div class="flex items-center gap-1 text-sm">
+            <div class="flex items-center gap-1 text-sm text-white">
               <button
                 class="bg-sky-500 w-full px-2 py-1 rounded-sm flex justify-center items-center gap-1"
                 @click="(e) => handleClickCard(e, 'continue')"

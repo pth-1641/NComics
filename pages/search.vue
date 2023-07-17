@@ -4,14 +4,20 @@ import { Comic } from 'types';
 const comics = ref<Comic[]>([]);
 const query = ref<string>('');
 const isFetching = ref<boolean>(true);
+const totalPages = ref<number>(1);
+const currentPage = ref<number>(1);
 
 const route = useRoute();
+const router = useRouter();
 
 const getSearchComics = async () => {
   try {
     isFetching.value = true;
-    const data = await useFetchData(`/search?q=${query.value}`);
-    comics.value = data.comics;
+    const data = await useFetchData(
+      `/search?q=${query.value}&page=${currentPage.value}`
+    );
+    comics.value = data?.comics;
+    totalPages.value = data?.total_pages;
   } catch (err) {
     console.log(err);
   } finally {
@@ -20,10 +26,18 @@ const getSearchComics = async () => {
 };
 
 query.value = route.query.q as string;
+currentPage.value = route.query.page ? Number(route.query.page) : 1;
 await getSearchComics();
 
+const handleChangePage = (page: number) => {
+  currentPage.value = page;
+  router.replace({ query: { ...route.query, page } });
+};
+
 watch(route, async (route) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   query.value = route.query.q as string;
+  currentPage.value = route.query.page ? Number(route.query.page) : 1;
   await getSearchComics();
 });
 </script>
@@ -73,7 +87,7 @@ watch(route, async (route) => {
             <h3 class="text-lg text-black leading-5">
               {{ comic.title }}
               <span class="text-sm text-gray-500">
-                ({{ comic.lastest_chapters[0].name }})
+                ({{ comic.lastest_chapters[0]?.name || 'Updating' }})
               </span>
             </h3>
             <p class="flex items-center gap-1 text-emerald-500">
@@ -104,5 +118,29 @@ watch(route, async (route) => {
         </NuxtLink>
       </template>
     </ul>
+    <vue-awesome-paginate
+      v-show="!isFetching && comics.length"
+      :total-items="totalPages"
+      :items-per-page="1"
+      :max-pages-shown="3"
+      v-model="currentPage"
+      :show-ending-buttons="true"
+      :hide-prev-next-when-ends="true"
+      :disable-breakpoint-buttons="true"
+      :on-click="handleChangePage"
+    >
+      <template #first-page-button>
+        <Icon name="icon-park:go-start" size="28" />
+      </template>
+      <template #prev-button>
+        <Icon name="icon-park:left" size="28" />
+      </template>
+      <template #next-button>
+        <Icon name="icon-park:right" size="28" />
+      </template>
+      <template #last-page-button>
+        <Icon name="icon-park:go-end" size="28" />
+      </template>
+    </vue-awesome-paginate>
   </main>
 </template>

@@ -52,7 +52,9 @@ if (!(await data).comic) {
 
 const { comic } = await data;
 const newestChapter = comic.chapters[0]?.name.match(/\d+(\.\d+)?/)?.[0];
-const totalChapterPage = Math.ceil(Number(newestChapter) / CHAPTER_PER_PAGE);
+const totalChapterPage = !isNaN(Number(newestChapter))
+  ? Math.ceil(Number(newestChapter) / CHAPTER_PER_PAGE)
+  : 0;
 
 const getChapter = (start: number, end: number) => {
   const limit = CHAPTER_PER_PAGE * 6;
@@ -157,7 +159,7 @@ useServerSeoMeta(
 </script>
 
 <template>
-  <div class="relative pt-12 px-4">
+  <div class="relative pt-12 px-4 min-h-screen">
     <div
       class="absolute top-0 inset-x-0 h-80 bg-gradient-to-b from-emerald-100 -z-10"
     />
@@ -191,7 +193,7 @@ useServerSeoMeta(
         </div>
       </div>
       <div class="sm:col-span-3">
-        <h4 class="text-3xl font-extrabold mt-5">{{ comic.title }}</h4>
+        <h4 class="text-3xl font-extrabold mt-5 sm:mt-0">{{ comic.title }}</h4>
         <p class="mb-3 mt-1 text-sm font-semibold text-gray-700">
           {{ comic.other_names.join(' | ') }}
         </p>
@@ -283,16 +285,31 @@ useServerSeoMeta(
         <div
           class="flex flex-col sm:flex-row items-center gap-3 mt-5 font-bold"
         >
-          <NuxtLink
-            :to="`/comic/${comic.id}/${comic.chapters.at(-1)?.id}`"
-            class="flex items-center gap-1 border-2 border-emerald-500 rounded bg-emerald-500 text-white text-lg px-6 py-2"
+          <button
+            @click="
+              () => {
+                if (!comic.chapters.length) return;
+                navigateTo(`/comic/${comic.id}/${comic.chapters.at(-1)?.id}`);
+              }
+            "
+            :class="`flex items-center gap-1 border-2 rounded text-white text-lg px-6 py-2 ${
+              comic.chapters.length
+                ? 'border-emerald-500 bg-emerald-500'
+                : 'border-gray-500 bg-gray-500'
+            }`"
+            :disable="!comic.chapters.length"
           >
             <Icon name="carbon:book" size="24" />
             Read Now
-          </NuxtLink>
+          </button>
           <button
-            class="flex items-center gap-1 rounded border-2 border-emerald-500 text-emerald-500 text-lg px-6 py-2"
+            :class="`flex items-center gap-1 rounded border-2 text-lg px-6 py-2 ${
+              comic.chapters.length
+                ? 'border-emerald-500 text-emerald-500'
+                : 'border-gray-500 text-gray-500'
+            }`"
             @click="showDownloadModal = true"
+            :disable="!comic.chapters.length"
           >
             <Icon name="octicon:download-16" size="24" />
             Download
@@ -324,7 +341,14 @@ useServerSeoMeta(
         </button>
       </div>
       <div v-show="currentTab === 'chapters'">
+        <h4
+          class="mt-6 text-center text-2xl font-bold text-gray-700 select-none"
+          v-if="!comic.chapters.length"
+        >
+          No Chapter
+        </h4>
         <div
+          v-else
           class="flex items-center gap-3 my-5 text-gray-800 font-semibold text-sm flex-wrap"
         >
           <button
@@ -453,8 +477,13 @@ useServerSeoMeta(
           Cancel
         </button>
         <button
-          class="text-white px-2.5 py-1.5 rounded flex items-center gap-1.5 bg-emerald-500"
+          :class="`text-white px-2.5 py-1.5 rounded flex items-center gap-1.5 ${
+            downloadChapters.length
+              ? 'border-emerald-500 bg-emerald-500'
+              : 'border-gray-500 bg-gray-500'
+          }`"
           @click="handleDownloadChapters"
+          :disabled="!downloadChapters.length"
         >
           Download
         </button>

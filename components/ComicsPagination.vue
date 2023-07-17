@@ -33,7 +33,7 @@ watch(route, (route) => {
   currentPage.value = Number(page);
 });
 
-const handleChangePage = async (page: number) => {
+const handleChangePage = (page: number) => {
   currentPage.value = page;
   router.replace({ query: { ...route.query, page } });
 };
