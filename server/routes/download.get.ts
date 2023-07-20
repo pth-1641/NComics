@@ -2,6 +2,14 @@ import PDFDocument from 'pdfkit';
 
 export default defineEventHandler(async (event) => {
   const { chapterId, comicId } = getQuery(event);
+
+  if (!chapterId || !comicId) {
+    return {
+      status: 400,
+      message: 'Bad request',
+    };
+  }
+
   const { baseURL } = useRuntimeConfig().public;
 
   const data: any = await $fetch(`/comics/${comicId}/chapters/${chapterId}`, {

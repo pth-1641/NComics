@@ -43,7 +43,7 @@ const handleClickCard = (e: Event, type: 'detail' | 'delete' | 'continue') => {
 
 <template>
   <div
-    class="overflow-hidden rounded-md duration-500 border-2 border-transparent hover:border-emerald-300 relative group group-hover:shadow-md cursor-pointer"
+    class="overflow-hidden rounded-md duration-500 border-2 border-transparent md:hover:border-emerald-300 relative group md:group-hover:shadow-md cursor-pointer"
     @click="(e) => handleClickCard(e, 'detail')"
   >
     <div

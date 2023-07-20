@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { routes, dynamicRoutes } from '@/utils/data';
 
-const device = ref<'mobile' | 'laptop'>('laptop');
+const device = ref<'mobile' | 'laptop'>('mobile');
 
 const searchValue = ref<string>('');
 const suggestComics = ref<any>([]);
