@@ -18,8 +18,6 @@ const isChangingEpisode = ref<boolean>(false);
 const comments = ref<Comment[]>([]);
 
 const route = useRoute();
-const config = useRuntimeConfig();
-const baseURL = config.public.baseURL as string;
 const { chapterId, comicId } = route.params;
 
 const { images, chapters, comic_name, chapter_name } = await useFetchData(
@@ -79,7 +77,7 @@ const onOpenEpisodes = () => {
 
 const handleDownload = async () => {
   try {
-    const href = `/api/download?comicId=${comicId}&chapterId=${chapterId}`;
+    const href = `/download?comicId=${comicId}&chapterId=${chapterId}`;
     const a = document.createElement('a');
     a.href = href;
     a.target = '_blank';
@@ -166,7 +164,7 @@ useServerSeoMeta(
         v-else
         v-for="image in images"
         :key="image.src"
-        :src="baseURL + image.src"
+        :src="image.src"
         :alt="`Page ${image.page}`"
         loading="lazy"
         :id="image.page"
