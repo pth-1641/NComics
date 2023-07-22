@@ -118,7 +118,7 @@ const onAddDownloadChapter = (chapterId: number) => {
 const handleDownloadChapters = async () => {
   try {
     for (const chapterId of downloadChapters.value) {
-      const href = `/api/download?comicId=${comicId}&chapterId=${chapterId}`;
+      const href = `/download?comicId=${comicId}&chapterId=${chapterId}`;
       const a = document.createElement('a');
       a.href = href;
       a.target = '_blank';
