@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   doc.on('end', () => stream.end());
 
   for (const { src } of images) {
-    const data: any = await $fetch(src, {
+    const data: any = await $fetch(baseURL + src, {
       responseType: 'arrayBuffer',
     });
 
