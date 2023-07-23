@@ -5,7 +5,7 @@ export const useFetchData = async (path: string): Promise<any> => {
     const { data } = await useFetch(path, {
       baseURL,
       method: 'GET',
-      cache: 'force-cache',
+      cache: 'default',
     });
     return data.value;
   } catch (err) {

@@ -1,40 +1,21 @@
 <script lang="ts" setup>
 import { meta } from '@/utils/data';
 
-const data = (async () => {
-  const [
-    trendingComics,
-    completedComics,
-    recentlyUpdateComics,
-    recommendComics,
-    boyComics,
-    girlComics,
-  ] = await Promise.all([
-    useFetchData('/trending-comics'),
-    useFetchData('/completed-comics'),
-    useFetchData('/recent-update-comics'),
-    useFetchData('/recommend-comics'),
-    useFetchData('/boy-comics'),
-    useFetchData('/girl-comics'),
-  ]);
-  return {
-    trendingComics,
-    completedComics,
-    recentlyUpdateComics,
-    recommendComics,
-    boyComics,
-    girlComics,
-  };
-})();
-
-const {
+const [
+  trendingComics,
   completedComics,
   recentlyUpdateComics,
-  trendingComics,
   recommendComics,
   boyComics,
   girlComics,
-} = await data;
+] = await Promise.all([
+  useFetchData('/trending-comics'),
+  useFetchData('/completed-comics'),
+  useFetchData('/recent-update-comics'),
+  useFetchData('/recommend-comics'),
+  useFetchData('/boy-comics'),
+  useFetchData('/girl-comics'),
+]);
 
 useSeoMeta(meta());
 useServerSeoMeta(meta());
