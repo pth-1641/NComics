@@ -93,7 +93,7 @@ const handleDownload = async () => {
 
 watch(inputRangeVal, (newValue) => {
   const el = document.getElementById(newValue.toString());
-  el?.scrollIntoView({ behavior: 'instant' });
+  el?.scrollIntoView();
 });
 
 const getElementsPos = () => {
