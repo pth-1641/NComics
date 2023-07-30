@@ -46,11 +46,12 @@ const data = (async () => {
   };
 })();
 
-if (!(await data).comic) {
+const { comic } = await data;
+
+if (!comic) {
   throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
 }
 
-const { comic } = await data;
 const newestChapter = comic.chapters[0]?.name.match(/\d+(\.\d+)?/)?.[0];
 const totalChapterPage = !isNaN(Number(newestChapter))
   ? Math.ceil(Number(newestChapter) / CHAPTER_PER_PAGE)
