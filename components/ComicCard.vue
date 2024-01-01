@@ -74,7 +74,7 @@ const handleClickCard = (e: Event, type: 'detail' | 'delete' | 'continue') => {
     <div class="relative">
       <div
         :class="`absolute inset-0 flex items-center justify-center text-white bg-gray-200 duration-150 ${
-          isImageLoaded ? 'opacity-0' : 'opacity-100'
+          isImageLoaded ? 'hidden' : 'block'
         }`"
       >
         <Icon name="line-md:loading-loop" size="48" />

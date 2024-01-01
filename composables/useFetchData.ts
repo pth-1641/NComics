@@ -5,10 +5,11 @@ export const useFetchData = async (path: string): Promise<any> => {
     const { data } = await useFetch(path, {
       baseURL,
       method: 'GET',
-      cache: 'default',
+      cache: 'force-cache',
     });
     return data.value;
   } catch (err) {
+    console.log(err);
     console.log(err);
   }
 };
