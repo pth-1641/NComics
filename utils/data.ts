@@ -83,7 +83,11 @@ export const dynamicRoutes: DynamicRoute[] = [
   },
 ];
 
-export const meta = (data?: { title?: string; description?: string }) => {
+export const meta = (data?: {
+  title?: string;
+  description?: string;
+  image?: string;
+}) => {
   const title = data?.title;
   const description = data?.description;
   return {
@@ -95,6 +99,6 @@ export const meta = (data?: { title?: string; description?: string }) => {
     ogDescription:
       description ||
       'Read hottest Japanese manga & Chinese comic & anime & Webtoon released on NComics. Thousands of popular web manga and comics for free! Romance, thriller, fantasy, comedy and more genres for you to explore.',
-    ogImage: '@/assets/img/logo.svg',
+    ogImage: data?.image || '@/assets/img/logo.svg',
   };
 };

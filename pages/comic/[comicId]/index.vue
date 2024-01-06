@@ -149,12 +149,14 @@ useSeoMeta(
   meta({
     title: comic.title + ' | NComics',
     description: comic.description,
+    image: comic.thumbnail,
   })
 );
 useServerSeoMeta(
   meta({
     title: comic.title + ' | NComics',
     description: comic.description,
+    image: comic.thumbnail,
   })
 );
 </script>
