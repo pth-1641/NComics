@@ -2,6 +2,7 @@
 const showFloatIcon = ref<boolean>(false);
 const isInReading = ref<boolean>(false);
 const isLoading = ref<boolean>(true);
+const loadingDiv = ref<HTMLDivElement>();
 
 const route = useRoute();
 
@@ -12,6 +13,11 @@ onMounted(() => {
     showFloatIcon.value = heightOffset > 2000;
   });
   isLoading.value = false;
+  setTimeout(() => {
+    if (loadingDiv.value) {
+      loadingDiv.value.style.display = 'none';
+    }
+  }, 1000);
 });
 
 const scrollToTop = () => {
@@ -29,9 +35,10 @@ watch(route, (route) => {
   <div
     :class="`fixed z-50 inset-0 bg-white flex items-center justify-center duration-300 ${
       isLoading
-        ? 'opacity-1  pointer-events-auto'
-        : 'opacity-0  pointer-events-none'
+        ? 'opacity-1 pointer-events-auto'
+        : 'opacity-0 pointer-events-none'
     }`"
+    ref="loadingDiv"
   >
     <svg
       class="pl"

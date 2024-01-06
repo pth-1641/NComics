@@ -1,10 +1,5 @@
 export default defineNuxtConfig({
   ssr: true,
-  nitro: {
-    prerender: {
-      crawlLinks: false,
-    },
-  },
   modules: [
     '@nuxtjs/tailwindcss',
     'nuxt-icon',
